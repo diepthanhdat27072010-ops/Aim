@@ -183,6 +183,8 @@
             font-size: 0.85rem;
         }
 
+        .price-chip:hover { background: #7e22ce; color: white; }
+
         .shop-links-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
         .shop-chip {
             text-decoration: none;
@@ -325,7 +327,7 @@
         .stats-money { font-size: 1.15rem; font-weight: 700; }
         .stats-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
 
-        /* Hộp Dự Đoán Ngày Hoàn Thành Thông Minh */
+        /* Hộp Dự Đoán Ngày Tự Động Học */
         .forecast-box {
             background: rgba(239, 246, 255, 0.85);
             border: 1.5px solid #bfdbfe;
@@ -379,24 +381,23 @@
 
 <div class="container">
     <div class="header">
-        <h1>🎯 Mục Tiêu Mua Sắm</h1>
-        <p>Thuật toán tự động dự đoán ngày bạn sẽ mua được món đồ</p>
+        <h1><span class="floating-icon">🎯</span> Mục Tiêu Mua Sắm</h1>
+        <p>Tự động học tốc độ nạp tiền để dự đoán ngày mua chính xác</p>
     </div>
 
-    <!-- Form Thêm Mục Tiêu -->
+    <!-- Form Thêm Mục Tiêu (Gọn gàng không yêu cầu mức nạp TB) -->
     <div class="card">
         <div class="form-title">✨ Thêm mục tiêu mới</div>
         <div class="form-grid">
             <div class="form-group">
                 <label>Tên món đồ / Thiết bị *</label>
                 <div class="input-with-btn">
-                    <input type="text" id="name" placeholder="Ví dụ: Màn hình Gaming 27 inch">
+                    <input type="text" id="name" placeholder="Ví dụ: Màn hình ASUS TUF 27 inch">
                     <button type="button" class="btn-ai-search" onclick="analyzeProduct()">⚡ Gợi Ý Giá</button>
                 </div>
                 <div id="ai-box" class="ai-recommendation-box"></div>
             </div>
 
-            <!-- Hàng Đơn giá và Số lượng -->
             <div class="row">
                 <div class="form-group" style="flex: 2;">
                     <label>Đơn giá 1 cái (VNĐ) *</label>
@@ -417,20 +418,11 @@
                 </div>
             </div>
 
-            <div class="row">
-                <div class="form-group">
-                    <label>Tiền hiện có sẵn (VNĐ)</label>
-                    <div class="input-suggest-container">
-                        <input type="text" inputmode="numeric" id="current" placeholder="0" oninput="handleMoneyInput(this, 'current-suggest')">
-                        <div id="current-suggest" class="suggest-dropdown"></div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Dự kiến nạp TB mỗi ngày (VNĐ)</label>
-                    <div class="input-suggest-container">
-                        <input type="text" inputmode="numeric" id="estDaily" placeholder="Mặc định: 75.000" oninput="handleMoneyInput(this, 'daily-suggest')">
-                        <div id="daily-suggest" class="suggest-dropdown"></div>
-                    </div>
+            <div class="form-group">
+                <label>Tiền hiện có sẵn (VNĐ)</label>
+                <div class="input-suggest-container">
+                    <input type="text" inputmode="numeric" id="current" placeholder="0" oninput="handleMoneyInput(this, 'current-suggest')">
+                    <div id="current-suggest" class="suggest-dropdown"></div>
                 </div>
             </div>
 
@@ -454,7 +446,7 @@
 </div>
 
 <script>
-    /* --- BỘ ĐỊNH DẠNG SỐ & DẤU CHẤM HÀNG NGHÌN --- */
+    /* --- ĐỊNH DẠNG SỐ & DẤU CHẤM HÀNG NGHÌN --- */
     function formatWithDots(rawStr) {
         const cleanNumber = String(rawStr).replace(/\D/g, '');
         if (!cleanNumber) return '';
@@ -546,39 +538,38 @@
         }
     }
 
-    /* --- BỘ DỰ ĐOÁN NGÀY MUA THỰC TẾ DỰA TRÊN TỐC ĐỘ NẠP --- */
+    /* --- THUẬT TOÁN TỰ ĐỘNG HỌC TỐC ĐỘ NẠP TIỀN THỰC TẾ --- */
     function predictPurchaseDate(goal) {
         if (goal.current >= goal.target) {
             return {
                 isDone: true,
-                main: "🎉 Bạn đã tích lũy đủ 100% số tiền để chốt đơn!",
+                main: "🎉 Chúc mừng! Bạn đã đủ 100% tiền để chốt đơn!",
                 sub: "Có thể tiến hành đặt mua sản phẩm ngay hôm nay."
             };
         }
 
         const remaining = goal.target - goal.current;
-        let avgPerDay = 75000; // Mặc định nếu người dùng chưa nạp lần nào
 
-        // 1. Nếu có lịch sử nạp tiền, tính trung bình theo lịch sử thực tế
-        if (goal.deposits && goal.deposits.length > 0) {
-            const totalDeposited = goal.deposits.reduce((sum, d) => sum + d.amount, 0);
-            avgPerDay = Math.round(totalDeposited / goal.deposits.length);
-        } else if (goal.userEstDaily && goal.userEstDaily > 0) {
-            // 2. Dùng con số dự kiến do người dùng nhập lúc tạo
-            avgPerDay = goal.userEstDaily;
+        // Nếu chưa từng có lần nạp tiền nào
+        if (!goal.deposits || goal.deposits.length === 0) {
+            return {
+                isDone: false,
+                main: "💡 Chưa có dữ liệu nạp tiền",
+                sub: `Hãy nạp khoản tiền đầu tiên ở dưới để hệ thống đo lường tốc độ và dự đoán ngày bạn mua được nhé!`
+            };
         }
 
-        // Tránh chia cho 0
-        avgPerDay = Math.max(10000, avgPerDay);
+        // Tính tốc độ nạp trung bình từ các lần nạp thực tế (dù 50k hay 100k)
+        const totalDeposited = goal.deposits.reduce((sum, d) => sum + d.amount, 0);
+        const avgPerDeposit = Math.round(totalDeposited / goal.deposits.length);
 
-        // Số ngày còn lại cần tiết kiệm
-        const daysLeft = Math.ceil(remaining / avgPerDay);
+        // Số lần nạp (tương đương số ngày nếu mỗi ngày bạn nạp 1 lần)
+        const daysLeft = Math.ceil(remaining / avgPerDeposit);
 
-        // Tính ra ngày trong tương lai (theo thời gian thực hiện tại)
+        // Tính ngày trong tương lai
         const targetDate = new Date();
         targetDate.setDate(targetDate.getDate() + daysLeft);
 
-        // Định dạng ngày Tiếng Việt (Ví dụ: Thứ Bảy, ngày 24 tháng 10 năm 2026)
         const daysOfWeek = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
         const dayName = daysOfWeek[targetDate.getDay()];
         const day = targetDate.getDate();
@@ -590,7 +581,7 @@
         return {
             isDone: false,
             main: `📅 Dự kiến mua được vào: <b>${formattedDateStr}</b> (khoảng <b>${daysLeft} ngày</b> nữa)`,
-            sub: `Dựa trên mức nạp trung bình <b>${formatWithDots(avgPerDay)} ₫/ngày</b> của bạn. Còn thiếu: ${formatWithDots(remaining)} ₫.`
+            sub: `Tốc độ nạp trung bình hiện tại: <b>${formatWithDots(avgPerDeposit)} ₫/lần</b>. Còn thiếu: ${formatWithDots(remaining)} ₫.`
         };
     }
 
@@ -699,9 +690,9 @@
 
     /* --- QUẢN LÝ DỮ LIỆU & RENDER --- */
     const DEFAULT_IMG = "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=150&auto=format&fit=crop&q=60";
-    let goals = JSON.parse(localStorage.getItem('my_adaptive_forecast_goals')) || [];
+    let goals = JSON.parse(localStorage.getItem('my_auto_predict_goals')) || [];
 
-    function save() { localStorage.setItem('my_adaptive_forecast_goals', JSON.stringify(goals)); }
+    function save() { localStorage.setItem('my_auto_predict_goals', JSON.stringify(goals)); }
 
     function formatVND(val) { return formatWithDots(Math.round(val)) + ' ₫'; }
 
@@ -754,7 +745,7 @@
                     </div>
                 </div>
 
-                <!-- Box dự đoán ngày mua thực tế -->
+                <!-- Box dự đoán ngày hoàn thành tự động học -->
                 <div class="forecast-box ${prediction.isDone ? 'completed' : ''}">
                     <div class="forecast-highlight">${prediction.main}</div>
                     <div class="forecast-sub">${prediction.sub}</div>
@@ -777,7 +768,6 @@
         const unitPrice = parseMoney(document.getElementById('price').value);
         const qty = parseInt(document.getElementById('qty').value) || 1;
         const current = parseMoney(document.getElementById('current').value) || 0;
-        const userEstDaily = parseMoney(document.getElementById('estDaily').value) || 75000;
         const link = document.getElementById('link').value.trim();
         const image = document.getElementById('image').value.trim();
 
@@ -794,7 +784,7 @@
             qty, 
             target, 
             current, 
-            userEstDaily,
+            // Nếu ban đầu đã có sẵn tiền, lưu nó làm mốc nạp đầu tiên
             deposits: current > 0 ? [{ amount: current, date: new Date().toISOString() }] : [],
             link, 
             image 
@@ -809,7 +799,6 @@
         document.getElementById('qty').value = '1';
         document.getElementById('totalPreview').innerHTML = '';
         document.getElementById('current').value = '';
-        document.getElementById('estDaily').value = '';
         document.getElementById('link').value = '';
         document.getElementById('image').value = '';
         document.getElementById('ai-box').classList.remove('active');
@@ -823,7 +812,7 @@
         const prev = goals[idx].current;
         goals[idx].current = Math.max(0, goals[idx].current + amount);
 
-        // Lưu lại lần nạp này vào lịch sử để thuật toán học tốc độ tích lũy
+        // Lưu lần nạp này vào lịch sử để hệ thống tự học tốc độ nạp thực tế
         if (!goals[idx].deposits) goals[idx].deposits = [];
         goals[idx].deposits.push({
             amount: amount,
