@@ -4,23 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mục Tiêu Mua Sắm Cá Nhân</title>
-    <!-- Thư viện pháo hoa ăn mừng nhẹ nhàng -->
+    <!-- Thư viện Canvas Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root {
-            --bg-body: #f1f5f9;
+            --bg-body: #f8fafc;
             --surface: #ffffff;
-            --surface-sub: #f8fafc;
+            --surface-sub: #f1f5f9;
             --text-main: #0f172a;
             --text-muted: #64748b;
             --primary: #0284c7;
-            --primary-light: #e0f2fe;
+            --primary-glow: rgba(2, 132, 199, 0.35);
             --success: #10b981;
-            --success-light: #d1fae5;
+            --success-glow: rgba(16, 185, 129, 0.35);
             --danger: #ef4444;
             --border: #e2e8f0;
             --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
-            --shadow-card: 0 4px 12px rgba(15, 23, 42, 0.04);
+            --shadow-hover: 0 20px 30px -10px rgba(2, 132, 199, 0.12), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
 
         * {
@@ -37,6 +37,7 @@
             justify-content: center;
             padding: 36px 16px 80px;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         .container {
@@ -44,20 +45,26 @@
             max-width: 650px;
         }
 
-        /* Tiêu đề & Animation */
+        /* Tiêu đề & Hiệu ứng icon lắc lư */
         .header {
             text-align: center;
             margin-bottom: 24px;
+            animation: fadeInDown 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .header h1 {
-            font-size: 1.8rem;
+            font-size: 1.85rem;
             color: #0369a1;
             letter-spacing: -0.5px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
+        }
+
+        .floating-icon {
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
         }
 
         .header p {
@@ -74,7 +81,9 @@
             margin-bottom: 24px;
             border: 1px solid var(--border);
             box-shadow: var(--shadow);
-            animation: fadeIn 0.4s ease-out;
+            animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
         }
 
         .form-title {
@@ -122,13 +131,14 @@
             color: var(--text-main);
             font-size: 0.95rem;
             outline: none;
-            transition: all 0.2s ease;
+            transition: all 0.25s ease;
         }
 
         input:focus {
             border-color: var(--primary);
             background: #fff;
-            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+            transform: translateY(-1px);
         }
 
         button {
@@ -137,7 +147,11 @@
             border-radius: 10px;
             padding: 10px 18px;
             font-weight: 600;
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        button:active {
+            transform: scale(0.95);
         }
 
         .btn-submit {
@@ -147,31 +161,56 @@
             padding: 12px;
             font-size: 1rem;
             margin-top: 6px;
-            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+            box-shadow: 0 4px 14px var(--primary-glow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Hiệu ứng tia sáng quét ngang nút bấm */
+        .btn-submit::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 40%;
+            height: 200%;
+            background: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.35) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: rotate(25deg);
+            animation: shimmer 4s infinite;
         }
 
         .btn-submit:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(2, 132, 199, 0.35);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px var(--primary-glow);
         }
 
-        /* Thẻ hiển thị mục tiêu */
+        /* Thẻ mục tiêu với Animation */
         .goal-card {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 16px;
             padding: 20px;
             margin-bottom: 20px;
-            box-shadow: var(--shadow-card);
+            box-shadow: var(--shadow);
             position: relative;
-            overflow: hidden;
-            transition: transform 0.2s, box-shadow 0.2s;
-            animation: slideUp 0.4s ease-out;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         .goal-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+            border-color: #cbd5e1;
+        }
+
+        /* Rung rinh nhẹ khi nạp tiền thành công */
+        .goal-card.deposit-punch {
+            animation: cardPunch 0.4s ease;
         }
 
         .goal-main {
@@ -188,11 +227,11 @@
             background: #f1f5f9;
             border: 1px solid var(--border);
             flex-shrink: 0;
-            transition: transform 0.3s ease;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .goal-card:hover .goal-thumb {
-            transform: scale(1.03);
+            transform: scale(1.06) rotate(-1.5deg);
         }
 
         .goal-info {
@@ -218,12 +257,15 @@
             background: transparent;
             color: #94a3b8;
             font-size: 1.2rem;
-            padding: 0 4px;
+            padding: 2px 6px;
             line-height: 1;
+            border-radius: 6px;
         }
 
         .btn-delete:hover {
             color: var(--danger);
+            background: #fee2e2;
+            transform: rotate(90deg);
         }
 
         .goal-link {
@@ -235,26 +277,30 @@
             align-items: center;
             gap: 4px;
             width: fit-content;
+            transition: transform 0.2s ease;
         }
 
         .goal-link:hover {
+            transform: translateX(3px);
             text-decoration: underline;
         }
 
-        /* Biểu đồ tròn và Thanh tiến trình */
+        /* Biểu đồ tròn động SVG & Số tiền */
         .chart-and-stats {
             display: flex;
             align-items: center;
             gap: 16px;
             margin: 16px 0 12px;
-            padding: 12px;
+            padding: 14px;
             background: var(--surface-sub);
             border-radius: 12px;
+            position: relative;
+            overflow: hidden;
         }
 
         .pie-chart {
-            width: 52px;
-            height: 52px;
+            width: 54px;
+            height: 54px;
             position: relative;
             flex-shrink: 0;
         }
@@ -277,7 +323,7 @@
 
         .circle-progress {
             stroke: var(--primary);
-            transition: stroke-dasharray 0.6s ease;
+            transition: stroke-dashoffset 0.8s cubic-bezier(0.16, 1, 0.3, 1), stroke 0.4s ease;
         }
 
         .pie-text {
@@ -295,9 +341,12 @@
         }
 
         .stats-money {
-            font-size: 1.05rem;
+            font-size: 1.1rem;
             font-weight: 700;
             color: var(--text-main);
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
         }
 
         .stats-sub {
@@ -306,7 +355,7 @@
             margin-top: 2px;
         }
 
-        /* Dự đoán tiến độ hàng ngày */
+        /* Hộp dự đoán tiến độ */
         .forecast-box {
             background: #eff6ff;
             border: 1px solid #bfdbfe;
@@ -318,12 +367,14 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            transition: all 0.3s ease;
         }
 
         .forecast-box.completed {
-            background: var(--success-light);
-            border-color: #a7f3d0;
-            color: #065f46;
+            background: #dcfce7;
+            border-color: #86efac;
+            color: #15803d;
+            animation: pulseGlow 2s infinite;
         }
 
         .deposit-row {
@@ -339,22 +390,50 @@
         .btn-add {
             background: var(--success);
             color: white;
-            padding: 8px 16px;
+            padding: 8px 18px;
+            box-shadow: 0 4px 10px var(--success-glow);
         }
 
         .btn-add:hover {
             background: #059669;
+            transform: translateY(-1px);
         }
 
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-8px); }
+        /* Các Keyframes Animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-5px) rotate(5deg); }
+        }
+
+        @keyframes shimmer {
+            0% { left: -60%; }
+            100% { left: 140%; }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-14px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(12px); }
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.97); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes cardPunch {
+            0% { transform: scale(1); }
+            40% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.2); }
+            50% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
         }
     </style>
 </head>
@@ -362,7 +441,7 @@
 
 <div class="container">
     <div class="header">
-        <h1>🎯 Mục Tiêu Mua Sắm</h1>
+        <h1><span class="floating-icon">🎯</span> Mục Tiêu Mua Sắm</h1>
         <p>Lập kế hoạch và theo dõi số tiền tiết kiệm mỗi ngày</p>
     </div>
 
@@ -399,7 +478,7 @@
 
             <div class="form-group">
                 <label>Link ảnh sản phẩm (URL)</label>
-                <input type="url" id="image" placeholder="Dán link ảnh hoặc để trống dùng ảnh ngẫu hứng">
+                <input type="url" id="image" placeholder="Dán link ảnh hoặc để trống">
             </div>
 
             <button class="btn-submit" onclick="createGoal()">+ Lưu Kế Hoạch</button>
@@ -412,24 +491,43 @@
 
 <script>
     const DEFAULT_IMG = "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=150&auto=format&fit=crop&q=60";
-    let goals = JSON.parse(localStorage.getItem('my_bright_goals')) || [];
+    let goals = JSON.parse(localStorage.getItem('my_animated_goals')) || [];
 
     function save() {
-        localStorage.setItem('my_bright_goals', JSON.stringify(goals));
+        localStorage.setItem('my_animated_goals', JSON.stringify(goals));
     }
 
     function formatVND(val) {
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
     }
 
-    // Tính toán số tiền mỗi ngày cần để dành
+    // Hiệu ứng số chạy mượt mà (Count-Up Animation)
+    function animateCountUp(element, start, end, duration = 600) {
+        const startTime = performance.now();
+        function update(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            // Hàm gia tốc easeOutQuad
+            const easeOut = 1 - (1 - progress) * (1 - progress);
+            const currentVal = Math.floor(start + (end - start) * easeOut);
+            element.textContent = formatVND(currentVal);
+
+            if (progress < 1) {
+                requestAnimationFrame(update);
+            } else {
+                element.textContent = formatVND(end);
+            }
+        }
+        requestAnimationFrame(update);
+    }
+
+    // Tính toán số tiền mỗi ngày cần tiết kiệm
     function calculateDailySavings(target, current, deadlineStr) {
         if (current >= target) return { status: 'done', text: '🎉 Chúc mừng! Bạn đã đủ tiền để chốt đơn rồi!' };
-        if (!deadlineStr) return { status: 'normal', text: '💡 Thêm ngày dự kiến mua để hệ thống tính số tiền tiết kiệm mỗi ngày.' };
+        if (!deadlineStr) return { status: 'normal', text: '💡 Thêm ngày dự kiến mua để hệ thống tính số tiền mỗi ngày.' };
 
         const now = new Date();
         const deadline = new Date(deadlineStr);
-        // Đặt giờ về 0 để so sánh chính xác theo ngày
         now.setHours(0, 0, 0, 0);
         deadline.setHours(0, 0, 0, 0);
 
@@ -437,7 +535,7 @@
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
         if (diffDays <= 0) {
-            return { status: 'warning', text: '⚠️ Đã tới hoặc qua ngày dự kiến mua, hãy nỗ lực nạp thêm tiền nhé!' };
+            return { status: 'warning', text: '⚠️ Đã tới ngày dự kiến mua, hãy tích cực nạp thêm nhé!' };
         }
 
         const remainingMoney = target - current;
@@ -449,7 +547,7 @@
         };
     }
 
-    function renderGoals() {
+    function renderGoals(animateIdx = null, prevAmount = 0) {
         const container = document.getElementById('goals-list');
         container.innerHTML = '';
 
@@ -457,7 +555,7 @@
             container.innerHTML = `
                 <div style="text-align: center; padding: 40px; color: var(--text-muted); background: white; border-radius: 16px; border: 1px dashed var(--border);">
                     <p style="font-size: 1.1rem;">Chưa có mục tiêu nào được tạo.</p>
-                    <p style="font-size: 0.85rem; margin-top: 6px;">Hãy đặt mục tiêu chiếc màn hình bạn muốn ở trên nhé!</p>
+                    <p style="font-size: 0.85rem; margin-top: 6px;">Hãy thêm chiếc màn hình hoặc món đồ bạn muốn ở phía trên!</p>
                 </div>
             `;
             return;
@@ -469,18 +567,17 @@
             const imgSrc = goal.image || DEFAULT_IMG;
             const forecast = calculateDailySavings(goal.target, goal.current, goal.deadline);
 
-            // Tính chu vi biểu đồ tròn SVG (bán kính r = 16 => C ≈ 100)
             const circumference = 2 * Math.PI * 16;
             const strokeDashoffset = circumference - (percent / 100) * circumference;
 
             const card = document.createElement('div');
-            card.className = 'goal-card';
+            card.className = `goal-card ${animateIdx === idx ? 'deposit-punch' : ''}`;
             card.innerHTML = `
                 <div class="goal-main">
                     <img src="${imgSrc}" class="goal-thumb" onerror="this.src='${DEFAULT_IMG}'">
                     <div class="goal-info">
                         <div class="goal-header">
-                            <span class="goal-title">${goal.name}</span>
+                            <span class="goal-title">${goal.name} ${isCompleted ? '🎊' : ''}</span>
                             <button class="btn-delete" title="Xóa" onclick="deleteGoal(${idx})">✕</button>
                         </div>
                         ${goal.link ? `<a href="${goal.link}" target="_blank" class="goal-link">🔗 Xem nơi bán</a>` : ''}
@@ -494,12 +591,12 @@
                             <circle class="circle-progress" cx="18" cy="18" r="16"
                                 stroke="${isCompleted ? 'var(--success)' : 'var(--primary)'}"
                                 stroke-dasharray="${circumference}"
-                                stroke-dashoffset="${strokeDashoffset}"></circle>
+                                stroke-dashoffset="${circumference}"></circle>
                         </svg>
                         <span class="pie-text">${percent}%</span>
                     </div>
                     <div class="stats-text">
-                        <div class="stats-money">${formatVND(goal.current)}</div>
+                        <div class="stats-money" id="money-${idx}">${formatVND(goal.current)}</div>
                         <div class="stats-sub">Mục tiêu: ${formatVND(goal.target)}</div>
                     </div>
                 </div>
@@ -514,6 +611,18 @@
                 </div>
             `;
             container.appendChild(card);
+
+            // Kích hoạt animation chạy vòng tròn sau khi thẻ gắn vào DOM
+            setTimeout(() => {
+                const circle = card.querySelector('.circle-progress');
+                if (circle) circle.style.strokeDashoffset = strokeDashoffset;
+            }, 50);
+
+            // Chạy hiệu ứng đếm số nếu là thẻ vừa được nạp tiền
+            if (animateIdx === idx) {
+                const moneyEl = card.querySelector(`#money-${idx}`);
+                animateCountUp(moneyEl, prevAmount, goal.current);
+            }
         });
     }
 
@@ -534,7 +643,7 @@
         save();
         renderGoals();
 
-        // Xóa form sau khi thêm
+        // Xóa trắng form
         document.getElementById('name').value = '';
         document.getElementById('target').value = '';
         document.getElementById('current').value = '0';
@@ -552,19 +661,32 @@
         const prevCurrent = goals[idx].current;
         goals[idx].current = Math.max(0, goals[idx].current + amount);
 
-        // Bắn pháo hoa nếu vượt mốc 100%
+        // Bắn pháo hoa nếu vừa cán mốc 100%
         if (goals[idx].current >= goals[idx].target && prevCurrent < goals[idx].target) {
-            if (typeof confetti === 'function') {
-                confetti({
-                    particleCount: 100,
-                    spread: 70,
-                    origin: { y: 0.6 }
-                });
-            }
+            triggerVictoryConfetti();
         }
 
         save();
-        renderGoals();
+        renderGoals(idx, prevCurrent);
+    }
+
+    // Hiệu ứng pháo hoa hai bên màn hình
+    function triggerVictoryConfetti() {
+        if (typeof confetti !== 'function') return;
+        const count = 200;
+        const defaults = { origin: { y: 0.7 } };
+
+        function fire(particleRatio, opts) {
+            confetti(Object.assign({}, defaults, opts, {
+                particleCount: Math.floor(count * particleRatio)
+            }));
+        }
+
+        fire(0.25, { spread: 26, startVelocity: 55 });
+        fire(0.2, { spread: 60 });
+        fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+        fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+        fire(0.1, { spread: 120, startVelocity: 45 });
     }
 
     function deleteGoal(idx) {
