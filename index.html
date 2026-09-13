@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mục Tiêu Mua Sắm Cá Nhân</title>
-    <!-- Thư viện Canvas Confetti -->
+    <!-- Thư viện Confetti ăn mừng -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root {
@@ -15,18 +15,15 @@
             --success: #10b981;
             --success-glow: rgba(16, 185, 129, 0.3);
             --danger: #ef4444;
-            --glass-bg: rgba(255, 255, 255, 0.78);
-            --glass-sub: rgba(241, 245, 249, 0.65);
-            --glass-border: rgba(255, 255, 255, 0.6);
+            --ai-color: #8b5cf6;
+            --ai-glow: rgba(139, 92, 246, 0.3);
+            --glass-bg: rgba(255, 255, 255, 0.82);
+            --glass-sub: rgba(241, 245, 249, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.65);
             --glass-shadow: 0 16px 36px -10px rgba(15, 23, 42, 0.08), 0 0 1px 1px rgba(255, 255, 255, 0.8) inset;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
 
         body {
             color: var(--text-main);
@@ -57,95 +54,42 @@
             mix-blend-mode: multiply;
         }
 
-        .orb-1 {
-            width: 380px;
-            height: 380px;
-            background: #38bdf8;
-            top: -60px;
-            left: -80px;
-            animation: moveOrb1 22s ease-in-out infinite alternate;
-        }
-
-        .orb-2 {
-            width: 420px;
-            height: 420px;
-            background: #34d399;
-            bottom: -100px;
-            right: -100px;
-            animation: moveOrb2 25s ease-in-out infinite alternate;
-        }
-
-        .orb-3 {
-            width: 320px;
-            height: 320px;
-            background: #f472b6;
-            top: 40%;
-            left: 60%;
-            animation: moveOrb3 20s ease-in-out infinite alternate;
-        }
+        .orb-1 { width: 380px; height: 380px; background: #38bdf8; top: -60px; left: -80px; animation: moveOrb1 22s ease-in-out infinite alternate; }
+        .orb-2 { width: 420px; height: 420px; background: #34d399; bottom: -100px; right: -100px; animation: moveOrb2 25s ease-in-out infinite alternate; }
+        .orb-3 { width: 320px; height: 320px; background: #f472b6; top: 40%; left: 60%; animation: moveOrb3 20s ease-in-out infinite alternate; }
 
         @keyframes moveOrb1 {
             0% { transform: translate(0, 0) scale(1); }
             50% { transform: translate(120px, 140px) scale(1.15); }
             100% { transform: translate(60px, 280px) scale(0.9); }
         }
-
         @keyframes moveOrb2 {
             0% { transform: translate(0, 0) scale(1); }
             50% { transform: translate(-140px, -120px) scale(1.1); }
             100% { transform: translate(-80px, -260px) scale(0.95); }
         }
-
         @keyframes moveOrb3 {
             0% { transform: translate(0, 0) scale(0.9); }
             50% { transform: translate(-100px, 80px) scale(1.2); }
             100% { transform: translate(80px, -100px) scale(1); }
         }
 
-        #particleCanvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 0;
-            pointer-events: none;
-        }
+        #particleCanvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; }
 
-        .container {
-            width: 100%;
-            max-width: 640px;
-            position: relative;
-            z-index: 1;
-        }
+        .container { width: 100%; max-width: 650px; position: relative; z-index: 1; }
 
-        .header {
-            text-align: center;
-            margin-bottom: 26px;
-            animation: fadeInDown 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
+        .header { text-align: center; margin-bottom: 26px; animation: fadeInDown 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
         .header h1 {
             font-size: 1.9rem;
             color: #0369a1;
-            letter-spacing: -0.5px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
             text-shadow: 0 2px 8px rgba(2, 132, 199, 0.15);
         }
-
-        .floating-icon {
-            display: inline-block;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        .header p {
-            font-size: 0.95rem;
-            color: var(--text-muted);
-            margin-top: 6px;
-        }
+        .floating-icon { display: inline-block; animation: float 3s ease-in-out infinite; }
+        .header p { font-size: 0.95rem; color: var(--text-muted); margin-top: 6px; }
 
         .card {
             background: var(--glass-bg);
@@ -166,40 +110,30 @@
             color: var(--text-main);
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: space-between;
         }
 
-        .form-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
+        .ai-key-btn {
+            background: transparent;
+            color: var(--ai-color);
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            border: 1px dashed var(--ai-color);
+            border-radius: 8px;
         }
 
-        .row {
-            display: flex;
-            gap: 12px;
-        }
+        .ai-key-btn:hover { background: rgba(139, 92, 246, 0.1); }
 
-        .row .form-group {
-            flex: 1;
-        }
+        .form-grid { display: flex; flex-direction: column; gap: 14px; }
+        .row { display: flex; gap: 12px; }
+        .row .form-group { flex: 1; }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            position: relative;
-        }
-
-        label {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #334155;
-        }
+        .form-group { display: flex; flex-direction: column; gap: 6px; position: relative; }
+        label { font-size: 0.85rem; font-weight: 600; color: #334155; }
 
         input {
-            background: rgba(255, 255, 255, 0.85);
-            border: 1.5px solid rgba(203, 213, 225, 0.6);
+            background: rgba(255, 255, 255, 0.9);
+            border: 1.5px solid rgba(203, 213, 225, 0.7);
             border-radius: 12px;
             padding: 10px 14px;
             color: var(--text-main);
@@ -215,14 +149,102 @@
             transform: translateY(-1px);
         }
 
-        .input-suggest-container {
-            position: relative;
-            width: 100%;
+        /* Khung nhập tên kết hợp nút AI */
+        .input-with-btn {
+            display: flex;
+            gap: 8px;
         }
 
-        .input-suggest-container input {
-            width: 100%;
+        .input-with-btn input { flex: 1; }
+
+        .btn-ai-search {
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
+            color: white;
+            font-size: 0.85rem;
+            padding: 10px 14px;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px var(--ai-glow);
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
+
+        .btn-ai-search:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px var(--ai-glow);
+        }
+
+        /* Hộp gợi ý từ AI & Website */
+        .ai-recommendation-box {
+            display: none;
+            background: #faf5ff;
+            border: 1.5px solid #e9d5ff;
+            border-radius: 14px;
+            padding: 14px;
+            margin-top: 4px;
+            animation: fadeInDown 0.3s ease-out;
+        }
+
+        .ai-recommendation-box.active { display: block; }
+
+        .ai-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #6b21a8;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .price-chip {
+            background: #f3e8ff;
+            color: #7e22ce;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-weight: 700;
+            cursor: pointer;
+            border: 1px solid #d8b4fe;
+            display: inline-block;
+            transition: all 0.2s ease;
+        }
+
+        .price-chip:hover {
+            background: #7e22ce;
+            color: white;
+        }
+
+        .shop-links-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .shop-chip {
+            text-decoration: none;
+            background: white;
+            color: #334155;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 6px 10px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .shop-chip:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        /* Popup gợi ý bội số tiền */
+        .input-suggest-container { position: relative; width: 100%; }
+        .input-suggest-container input { width: 100%; }
 
         .suggest-dropdown {
             position: absolute;
@@ -235,15 +257,13 @@
             border-radius: 12px;
             box-shadow: 0 12px 28px -6px rgba(15, 23, 42, 0.15);
             z-index: 99;
-            max-height: 220px;
+            max-height: 200px;
             overflow-y: auto;
             display: none;
             animation: fadeInDown 0.2s ease-out;
         }
 
-        .suggest-dropdown.active {
-            display: block;
-        }
+        .suggest-dropdown.active { display: block; }
 
         .suggest-item {
             padding: 9px 14px;
@@ -255,23 +275,10 @@
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid #f1f5f9;
-            transition: background 0.15s ease;
         }
 
-        .suggest-item:last-child {
-            border-bottom: none;
-        }
-
-        .suggest-item:hover {
-            background: #e0f2fe;
-            color: #0284c7;
-        }
-
-        .suggest-tag {
-            font-size: 0.75rem;
-            color: #94a3b8;
-            font-weight: 500;
-        }
+        .suggest-item:hover { background: #e0f2fe; }
+        .suggest-tag { font-size: 0.75rem; color: #94a3b8; }
 
         button {
             cursor: pointer;
@@ -282,9 +289,7 @@
             transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        button:active {
-            transform: scale(0.96);
-        }
+        button:active { transform: scale(0.96); }
 
         .btn-submit {
             background: linear-gradient(135deg, #0284c7, #0ea5e9);
@@ -305,20 +310,12 @@
             left: -60%;
             width: 40%;
             height: 200%;
-            background: linear-gradient(
-                to right,
-                rgba(255, 255, 255, 0) 0%,
-                rgba(255, 255, 255, 0.4) 50%,
-                rgba(255, 255, 255, 0) 100%
-            );
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
             transform: rotate(25deg);
             animation: shimmer 4s infinite;
         }
 
-        .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px var(--primary-glow);
-        }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--primary-glow); }
 
         .goal-card {
             background: var(--glass-bg);
@@ -339,16 +336,9 @@
             border-color: rgba(255, 255, 255, 0.95);
         }
 
-        .goal-card.deposit-punch {
-            animation: cardPunch 0.4s ease;
-        }
+        .goal-card.deposit-punch { animation: cardPunch 0.4s ease; }
 
-        .goal-main {
-            display: flex;
-            gap: 16px;
-            align-items: center;
-        }
-
+        .goal-main { display: flex; gap: 16px; align-items: center; }
         .goal-thumb {
             width: 86px;
             height: 86px;
@@ -360,43 +350,20 @@
             transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        .goal-card:hover .goal-thumb {
-            transform: scale(1.06) rotate(-2deg);
-        }
-
-        .goal-info {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .goal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-
-        .goal-title {
-            font-size: 1.15rem;
-            font-weight: 700;
-            color: var(--text-main);
-        }
+        .goal-card:hover .goal-thumb { transform: scale(1.06) rotate(-2deg); }
+        .goal-info { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+        .goal-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .goal-title { font-size: 1.15rem; font-weight: 700; color: var(--text-main); }
 
         .btn-delete {
             background: transparent;
             color: #94a3b8;
             font-size: 1.2rem;
             padding: 2px 6px;
-            line-height: 1;
             border-radius: 8px;
         }
 
-        .btn-delete:hover {
-            color: var(--danger);
-            background: #fee2e2;
-            transform: rotate(90deg);
-        }
+        .btn-delete:hover { color: var(--danger); background: #fee2e2; transform: rotate(90deg); }
 
         .goal-link {
             font-size: 0.8rem;
@@ -407,13 +374,9 @@
             align-items: center;
             gap: 4px;
             width: fit-content;
-            transition: transform 0.2s ease;
         }
 
-        .goal-link:hover {
-            transform: translateX(3px);
-            text-decoration: underline;
-        }
+        .goal-link:hover { text-decoration: underline; transform: translateX(3px); }
 
         .chart-and-stats {
             display: flex;
@@ -426,34 +389,11 @@
             border: 1px solid rgba(255, 255, 255, 0.6);
         }
 
-        .pie-chart {
-            width: 54px;
-            height: 54px;
-            position: relative;
-            flex-shrink: 0;
-        }
-
-        .pie-chart svg {
-            transform: rotate(-90deg);
-            width: 100%;
-            height: 100%;
-        }
-
-        .pie-chart circle {
-            fill: none;
-            stroke-width: 3.8;
-            stroke-linecap: round;
-        }
-
-        .circle-bg {
-            stroke: rgba(226, 232, 240, 0.8);
-        }
-
-        .circle-progress {
-            stroke: var(--primary);
-            transition: stroke-dashoffset 0.8s cubic-bezier(0.16, 1, 0.3, 1), stroke 0.4s ease;
-        }
-
+        .pie-chart { width: 54px; height: 54px; position: relative; flex-shrink: 0; }
+        .pie-chart svg { transform: rotate(-90deg); width: 100%; height: 100%; }
+        .pie-chart circle { fill: none; stroke-width: 3.8; stroke-linecap: round; }
+        .circle-bg { stroke: rgba(226, 232, 240, 0.8); }
+        .circle-progress { stroke: var(--primary); transition: stroke-dashoffset 0.8s cubic-bezier(0.16, 1, 0.3, 1), stroke 0.4s ease; }
         .pie-text {
             position: absolute;
             top: 50%;
@@ -461,24 +401,11 @@
             transform: translate(-50%, -50%);
             font-size: 0.75rem;
             font-weight: 700;
-            color: var(--text-main);
         }
 
-        .stats-text {
-            flex: 1;
-        }
-
-        .stats-money {
-            font-size: 1.15rem;
-            font-weight: 700;
-            color: var(--text-main);
-        }
-
-        .stats-sub {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-top: 2px;
-        }
+        .stats-text { flex: 1; }
+        .stats-money { font-size: 1.15rem; font-weight: 700; }
+        .stats-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
 
         .forecast-box {
             background: rgba(239, 246, 255, 0.8);
@@ -500,12 +427,7 @@
             animation: pulseGlow 2s infinite;
         }
 
-        .deposit-row {
-            display: flex;
-            gap: 8px;
-            align-items: flex-start;
-        }
-
+        .deposit-row { display: flex; gap: 8px; align-items: flex-start; }
         .btn-add {
             background: var(--success);
             color: white;
@@ -513,47 +435,15 @@
             box-shadow: 0 4px 12px var(--success-glow);
             white-space: nowrap;
         }
+        .btn-add:hover { background: #059669; transform: translateY(-1px); }
 
-        .btn-add:hover {
-            background: #059669;
-            transform: translateY(-1px);
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-5px) rotate(5deg); }
-        }
-
-        @keyframes shimmer {
-            0% { left: -60%; }
-            100% { left: 140%; }
-        }
-
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes scaleIn {
-            from { opacity: 0; transform: scale(0.96); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        @keyframes slideUpFade {
-            from { opacity: 0; transform: translateY(24px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes cardPunch {
-            0% { transform: scale(1); }
-            40% { transform: scale(1.025); }
-            100% { transform: scale(1); }
-        }
-
-        @keyframes pulseGlow {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.25); }
-            50% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
-        }
+        @keyframes float { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-5px) rotate(5deg); } }
+        @keyframes shimmer { 0% { left: -60%; } 100% { left: 140%; } }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+        @keyframes slideUpFade { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes cardPunch { 0% { transform: scale(1); } 40% { transform: scale(1.025); } 100% { transform: scale(1); } }
+        @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.25); } 50% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); } }
     </style>
 </head>
 <body>
@@ -567,23 +457,31 @@
 <div class="container">
     <div class="header">
         <h1><span class="floating-icon">🎯</span> Mục Tiêu Mua Sắm</h1>
-        <p>Lập kế hoạch và theo dõi số tiền tiết kiệm mỗi ngày</p>
+        <p>Lập kế hoạch tiết kiệm kết hợp trợ lý tìm kiếm giá thông minh</p>
     </div>
 
     <!-- Form Thêm Mục Tiêu -->
     <div class="card">
-        <div class="form-title">✨ Thêm mục tiêu mới</div>
+        <div class="form-title">
+            <span>✨ Thêm mục tiêu mới</span>
+            <button type="button" class="ai-key-btn" onclick="configureApiKey()">⚙️ Cài đặt Gemini Key</button>
+        </div>
         <div class="form-grid">
             <div class="form-group">
                 <label>Tên món đồ / Thiết bị *</label>
-                <input type="text" id="name" placeholder="Ví dụ: Màn hình ASUS ROG 27 inch">
+                <div class="input-with-btn">
+                    <input type="text" id="name" placeholder="Ví dụ: Màn hình ASUS ROG 27 inch 180Hz">
+                    <button type="button" class="btn-ai-search" onclick="analyzeProductWithAI()">✨ AI Tìm Giá</button>
+                </div>
+                <!-- Box kết quả gợi ý từ AI & Web -->
+                <div id="ai-box" class="ai-recommendation-box"></div>
             </div>
 
             <div class="row">
                 <div class="form-group">
                     <label>Giá cần tiết kiệm (VNĐ) *</label>
                     <div class="input-suggest-container">
-                        <input type="text" inputmode="numeric" id="target" placeholder="Ví dụ: 1.200.000" oninput="handleMoneyInput(this, 'target-suggest')">
+                        <input type="text" inputmode="numeric" id="target" placeholder="Ví dụ: 5.200.000" oninput="handleMoneyInput(this, 'target-suggest')">
                         <div id="target-suggest" class="suggest-dropdown"></div>
                     </div>
                 </div>
@@ -603,7 +501,7 @@
                 </div>
                 <div class="form-group">
                     <label>Link mua hàng</label>
-                    <input type="url" id="link" placeholder="https://shopee.vn/...">
+                    <input type="url" id="link" placeholder="https://...">
                 </div>
             </div>
 
@@ -621,7 +519,7 @@
 </div>
 
 <script>
-    /* --- HÀM ĐỊNH DẠNG DẤU CHẤM HÀNG NGHÌN & GỢI Ý TIỀN --- */
+    /* --- BỘ XỬ LÝ ĐỊNH DẠNG SỐ VÀ TIỀN TỆ --- */
     function formatWithDots(rawStr) {
         const cleanNumber = String(rawStr).replace(/\D/g, '');
         if (!cleanNumber) return '';
@@ -640,8 +538,7 @@
         { factor: 100000, label: 'trăm nghìn' },
         { factor: 1000000, label: 'triệu' },
         { factor: 10000000, label: 'chục triệu' },
-        { factor: 100000000, label: 'trăm triệu' },
-        { factor: 1000000000, label: 'tỷ' }
+        { factor: 100000000, label: 'trăm triệu' }
     ];
 
     function handleMoneyInput(inputEl, dropdownId) {
@@ -675,280 +572,69 @@
 
     function selectSuggestion(inputId, amount, dropdownId) {
         const inputEl = document.getElementById(inputId);
-        if (inputEl) {
-            inputEl.value = formatWithDots(amount);
-        }
+        if (inputEl) inputEl.value = formatWithDots(amount);
         const dropdown = document.getElementById(dropdownId);
         if (dropdown) dropdown.classList.remove('active');
     }
 
-    // Đóng dropdown khi click ra ngoài
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.input-suggest-container')) {
             document.querySelectorAll('.suggest-dropdown').forEach(d => d.classList.remove('active'));
         }
     });
 
-    /* --- CANVAS HẠT BỤI SAO BAY --- */
-    const canvas = document.getElementById('particleCanvas');
-    const ctx = canvas.getContext('2d');
-    let particles = [];
-
-    function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-
-    class Particle {
-        constructor() {
-            this.reset();
-            this.y = Math.random() * canvas.height;
-        }
-        reset() {
-            this.x = Math.random() * canvas.width;
-            this.y = canvas.height + Math.random() * 20;
-            this.size = Math.random() * 2.8 + 1.2;
-            this.speedY = Math.random() * 0.7 + 0.3;
-            this.speedX = (Math.random() - 0.5) * 0.4;
-            this.alpha = Math.random() * 0.5 + 0.25;
-            this.color = Math.random() > 0.5 ? '2, 132, 199' : '16, 185, 129';
-        }
-        update() {
-            this.y -= this.speedY;
-            this.x += this.speedX;
-            if (this.y < -10 || this.x < -10 || this.x > canvas.width + 10) {
-                this.reset();
-            }
-        }
-        draw() {
-            ctx.fillStyle = `rgba(${this.color}, ${this.alpha})`;
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.fill();
+    /* --- TÍNH NĂNG AI & GỢI Ý TRANG WEB MUA SẮM --- */
+    function configureApiKey() {
+        const currentKey = localStorage.getItem('user_gemini_api_key') || '';
+        const key = prompt("Nhập Gemini API Key miễn phí của bạn (Lấy tại aistudio.google.com):", currentKey);
+        if (key !== null) {
+            localStorage.setItem('user_gemini_api_key', key.trim());
+            alert(key.trim() ? "Đã lưu Gemini API Key thành công!" : "Đã xóa API Key.");
         }
     }
 
-    for (let i = 0; i < 40; i++) {
-        particles.push(new Particle());
-    }
+    async function analyzeProductWithAI() {
+        const nameInput = document.getElementById('name');
+        const productName = nameInput.value.trim();
+        const aiBox = document.getElementById('ai-box');
 
-    function animateParticles() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        particles.forEach(p => {
-            p.update();
-            p.draw();
-        });
-        requestAnimationFrame(animateParticles);
-    }
-    animateParticles();
-
-    /* --- LOGIC QUẢN LÝ MỤC TIÊU --- */
-    const DEFAULT_IMG = "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=150&auto=format&fit=crop&q=60";
-    let goals = JSON.parse(localStorage.getItem('my_orb_goals_v3')) || [];
-
-    function save() {
-        localStorage.setItem('my_orb_goals_v3', JSON.stringify(goals));
-    }
-
-    function formatVND(val) {
-        return formatWithDots(Math.round(val)) + ' ₫';
-    }
-
-    function animateCountUp(element, start, end, duration = 600) {
-        const startTime = performance.now();
-        function update(currentTime) {
-            const elapsed = currentTime - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            const easeOut = 1 - (1 - progress) * (1 - progress);
-            const currentVal = Math.floor(start + (end - start) * easeOut);
-            element.textContent = formatVND(currentVal);
-
-            if (progress < 1) {
-                requestAnimationFrame(update);
-            } else {
-                element.textContent = formatVND(end);
-            }
-        }
-        requestAnimationFrame(update);
-    }
-
-    function calculateDailySavings(target, current, deadlineStr) {
-        if (current >= target) return { status: 'done', text: '🎉 Chúc mừng! Bạn đã đủ tiền để chốt đơn rồi!' };
-        if (!deadlineStr) return { status: 'normal', text: '💡 Thêm ngày dự kiến mua để hệ thống tính số tiền mỗi ngày.' };
-
-        const now = new Date();
-        const deadline = new Date(deadlineStr);
-        now.setHours(0, 0, 0, 0);
-        deadline.setHours(0, 0, 0, 0);
-
-        const diffTime = deadline.getTime() - now.getTime();
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-        if (diffDays <= 0) {
-            return { status: 'warning', text: '⚠️ Đã tới ngày dự kiến mua, hãy tích cực nạp thêm nhé!' };
-        }
-
-        const remainingMoney = target - current;
-        const dailyMoney = Math.ceil(remainingMoney / diffDays);
-
-        return {
-            status: 'plan',
-            text: `⏳ Còn <b>${diffDays} ngày</b>. Bạn cần để dành khoảng <b>${formatVND(dailyMoney)}/ngày</b>.`
-        };
-    }
-
-    function renderGoals(animateIdx = null, prevAmount = 0) {
-        const container = document.getElementById('goals-list');
-        container.innerHTML = '';
-
-        if (goals.length === 0) {
-            container.innerHTML = `
-                <div style="text-align: center; padding: 40px; color: var(--text-muted); background: var(--glass-bg); backdrop-filter: blur(16px); border-radius: 20px; border: 1px dashed rgba(203, 213, 225, 0.8);">
-                    <p style="font-size: 1.1rem; font-weight: 600;">Chưa có mục tiêu nào được tạo.</p>
-                    <p style="font-size: 0.85rem; margin-top: 6px;">Hãy đặt mục tiêu món đồ bạn muốn ở bảng phía trên!</p>
-                </div>
-            `;
+        if (!productName) {
+            alert("Vui lòng nhập tên sản phẩm trước khi tìm kiếm!");
+            nameInput.focus();
             return;
         }
 
-        goals.forEach((goal, idx) => {
-            const percent = Math.min(100, Math.round((goal.current / goal.target) * 100));
-            const isCompleted = goal.current >= goal.target;
-            const imgSrc = goal.image || DEFAULT_IMG;
-            const forecast = calculateDailySavings(goal.target, goal.current, goal.deadline);
+        aiBox.classList.add('active');
+        aiBox.innerHTML = `<span style="font-size:0.85rem; color:#7e22ce;">⏳ Đang tìm kiếm giá & sàn bán uy tín cho "${productName}"...</span>`;
 
-            const circumference = 2 * Math.PI * 16;
-            const strokeDashoffset = circumference - (percent / 100) * circumference;
+        // Tạo sẵn các link tìm kiếm nhanh trên các sàn thương mại
+        const queryEncoded = encodeURIComponent(productName);
+        const shopLinks = [
+            { name: "Shopee", url: `https://shopee.vn/search?keyword=${queryEncoded}` },
+            { name: "CellphoneS", url: `https://cellphones.com.vn/catalogsearch/result?q=${queryEncoded}` },
+            { name: "Phong Vũ", url: `https://phongvu.vn/search?q=${queryEncoded}` },
+            { name: "Google Shopping", url: `https://www.google.com/search?tbm=shop&q=${queryEncoded}` }
+        ];
 
-            const card = document.createElement('div');
-            card.className = `goal-card ${animateIdx === idx ? 'deposit-punch' : ''}`;
-            card.innerHTML = `
-                <div class="goal-main">
-                    <img src="${imgSrc}" class="goal-thumb" onerror="this.src='${DEFAULT_IMG}'">
-                    <div class="goal-info">
-                        <div class="goal-header">
-                            <span class="goal-title">${goal.name} ${isCompleted ? '🎊' : ''}</span>
-                            <button class="btn-delete" title="Xóa" onclick="deleteGoal(${idx})">✕</button>
-                        </div>
-                        ${goal.link ? `<a href="${goal.link}" target="_blank" class="goal-link">🔗 Xem nơi bán</a>` : ''}
-                    </div>
-                </div>
+        let estimatedPrice = null;
+        let aiNote = "";
+        const apiKey = localStorage.getItem('user_gemini_api_key');
 
-                <div class="chart-and-stats">
-                    <div class="pie-chart">
-                        <svg viewBox="0 0 36 36">
-                            <circle class="circle-bg" cx="18" cy="18" r="16"></circle>
-                            <circle class="circle-progress" cx="18" cy="18" r="16"
-                                stroke="${isCompleted ? 'var(--success)' : 'var(--primary)'}"
-                                stroke-dasharray="${circumference}"
-                                stroke-dashoffset="${circumference}"></circle>
-                        </svg>
-                        <span class="pie-text">${percent}%</span>
-                    </div>
-                    <div class="stats-text">
-                        <div class="stats-money" id="money-${idx}">${formatVND(goal.current)}</div>
-                        <div class="stats-sub">Mục tiêu: ${formatVND(goal.target)}</div>
-                    </div>
-                </div>
-
-                <div class="forecast-box ${isCompleted ? 'completed' : ''}">
-                    ${forecast.text}
-                </div>
-
-                <div class="deposit-row">
-                    <div class="input-suggest-container" style="flex: 1;">
-                        <input type="text" inputmode="numeric" id="dep-${idx}" placeholder="Nhập tiền nạp (VD: 50.000)..." oninput="handleMoneyInput(this, 'dep-suggest-${idx}')">
-                        <div id="dep-suggest-${idx}" class="suggest-dropdown"></div>
-                    </div>
-                    <button class="btn-add" onclick="depositMoney(${idx})">+ Nạp tiền</button>
-                </div>
-            `;
-            container.appendChild(card);
-
-            setTimeout(() => {
-                const circle = card.querySelector('.circle-progress');
-                if (circle) circle.style.strokeDashoffset = strokeDashoffset;
-            }, 60);
-
-            if (animateIdx === idx) {
-                const moneyEl = card.querySelector(`#money-${idx}`);
-                animateCountUp(moneyEl, prevAmount, goal.current);
-            }
-        });
-    }
-
-    function createGoal() {
-        const name = document.getElementById('name').value.trim();
-        const target = parseMoney(document.getElementById('target').value);
-        const current = parseMoney(document.getElementById('current').value) || 0;
-        const deadline = document.getElementById('deadline').value;
-        const link = document.getElementById('link').value.trim();
-        const image = document.getElementById('image').value.trim();
-
-        if (!name || isNaN(target) || target <= 0) {
-            alert('Vui lòng nhập tên sản phẩm và số tiền hợp lệ!');
-            return;
-        }
-
-        goals.push({ name, target, current, deadline, link, image });
-        save();
-        renderGoals();
-
-        document.getElementById('name').value = '';
-        document.getElementById('target').value = '';
-        document.getElementById('current').value = '';
-        document.getElementById('deadline').value = '';
-        document.getElementById('link').value = '';
-        document.getElementById('image').value = '';
-    }
-
-    function depositMoney(idx) {
-        const input = document.getElementById(`dep-${idx}`);
-        const amount = parseMoney(input.value);
-
-        if (isNaN(amount) || amount === 0) return;
-
-        const prevCurrent = goals[idx].current;
-        goals[idx].current = Math.max(0, goals[idx].current + amount);
-
-        if (goals[idx].current >= goals[idx].target && prevCurrent < goals[idx].target) {
-            triggerVictoryConfetti();
-        }
-
-        save();
-        renderGoals(idx, prevCurrent);
-    }
-
-    function triggerVictoryConfetti() {
-        if (typeof confetti !== 'function') return;
-        const count = 200;
-        const defaults = { origin: { y: 0.7 } };
-
-        function fire(particleRatio, opts) {
-            confetti(Object.assign({}, defaults, opts, {
-                particleCount: Math.floor(count * particleRatio)
-            }));
-        }
-
-        fire(0.25, { spread: 26, startVelocity: 55 });
-        fire(0.2, { spread: 60 });
-        fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
-        fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
-        fire(0.1, { spread: 120, startVelocity: 45 });
-    }
-
-    function deleteGoal(idx) {
-        if (confirm(`Bạn muốn xóa "${goals[idx].name}"?`)) {
-            goals.splice(idx, 1);
-            save();
-            renderGoals();
-        }
-    }
-
-    renderGoals();
-</script>
-
-</body>
-</html>
+        // Nếu có API Key, dùng Gemini để dự đoán giá chuẩn xác
+        if (apiKey) {
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: `Bạn là trợ lý mua sắm. Với sản phẩm: "${productName}". Hãy ước lượng mức giá bán phổ biến tại thị trường Việt Nam (tính bằng VND). Chỉ trả về JSON có cấu trúc đúng định dạng: {"price": 5000000, "note": "Khoảng 4.800.000 - 5.500.000đ"}. Tuyệt đối không thêm chữ ngoài JSON.`
+                            }]
+                        }]
+                    })
+                });
+                const data = await response.json();
+                const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (text) {
+                    const cleanJson = text.replace(/```json|
