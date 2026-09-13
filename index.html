@@ -113,17 +113,6 @@
             justify-content: space-between;
         }
 
-        .ai-key-btn {
-            background: transparent;
-            color: var(--ai-color);
-            font-size: 0.8rem;
-            padding: 4px 8px;
-            border: 1px dashed var(--ai-color);
-            border-radius: 8px;
-        }
-
-        .ai-key-btn:hover { background: rgba(139, 92, 246, 0.1); }
-
         .form-grid { display: flex; flex-direction: column; gap: 14px; }
         .row { display: flex; gap: 12px; }
         .row .form-group { flex: 1; }
@@ -149,7 +138,6 @@
             transform: translateY(-1px);
         }
 
-        /* Khung nhập tên kết hợp nút AI */
         .input-with-btn {
             display: flex;
             gap: 8px;
@@ -174,7 +162,7 @@
             box-shadow: 0 6px 16px var(--ai-glow);
         }
 
-        /* Hộp gợi ý từ AI & Website */
+        /* Hộp gợi ý thông minh */
         .ai-recommendation-box {
             display: none;
             background: #faf5ff;
@@ -206,12 +194,15 @@
             cursor: pointer;
             border: 1px solid #d8b4fe;
             display: inline-block;
+            margin: 2px 4px 2px 0;
             transition: all 0.2s ease;
+            font-size: 0.85rem;
         }
 
         .price-chip:hover {
             background: #7e22ce;
             color: white;
+            transform: translateY(-1px);
         }
 
         .shop-links-row {
@@ -457,23 +448,22 @@
 <div class="container">
     <div class="header">
         <h1><span class="floating-icon">🎯</span> Mục Tiêu Mua Sắm</h1>
-        <p>Lập kế hoạch tiết kiệm kết hợp trợ lý tìm kiếm giá thông minh</p>
+        <p>Lập kế hoạch tiết kiệm và trợ lý tìm giá thông minh</p>
     </div>
 
     <!-- Form Thêm Mục Tiêu -->
     <div class="card">
         <div class="form-title">
             <span>✨ Thêm mục tiêu mới</span>
-            <button type="button" class="ai-key-btn" onclick="configureApiKey()">⚙️ Cài đặt Gemini Key</button>
         </div>
         <div class="form-grid">
             <div class="form-group">
                 <label>Tên món đồ / Thiết bị *</label>
                 <div class="input-with-btn">
                     <input type="text" id="name" placeholder="Ví dụ: Màn hình ASUS ROG 27 inch 180Hz">
-                    <button type="button" class="btn-ai-search" onclick="analyzeProductWithAI()">✨ AI Tìm Giá</button>
+                    <button type="button" class="btn-ai-search" onclick="analyzeProduct()">⚡ Gợi Ý Giá</button>
                 </div>
-                <!-- Box kết quả gợi ý từ AI & Web -->
+                <!-- Box gợi ý thông minh -->
                 <div id="ai-box" class="ai-recommendation-box"></div>
             </div>
 
@@ -519,7 +509,7 @@
 </div>
 
 <script>
-    /* --- BỘ XỬ LÝ ĐỊNH DẠNG SỐ VÀ TIỀN TỆ --- */
+    /* --- BỘ XỬ LÝ ĐỊNH DẠNG DẤU CHẤM --- */
     function formatWithDots(rawStr) {
         const cleanNumber = String(rawStr).replace(/\D/g, '');
         if (!cleanNumber) return '';
@@ -583,58 +573,373 @@
         }
     });
 
-    /* --- TÍNH NĂNG AI & GỢI Ý TRANG WEB MUA SẮM --- */
-    function configureApiKey() {
-        const currentKey = localStorage.getItem('user_gemini_api_key') || '';
-        const key = prompt("Nhập Gemini API Key miễn phí của bạn (Lấy tại aistudio.google.com):", currentKey);
-        if (key !== null) {
-            localStorage.setItem('user_gemini_api_key', key.trim());
-            alert(key.trim() ? "Đã lưu Gemini API Key thành công!" : "Đã xóa API Key.");
+    /* --- BỘ PHÂN TÍCH GIÁ THỊ TRƯỜNG OFFLINE (CHẠY NGAY 100%) --- */
+    function estimatePriceFromText(text) {
+        const lower = text.toLowerCase();
+
+        // 1. Màn hình máy tính
+        if (lower.includes('màn hình') || lower.includes('monitor') || lower.includes('display')) {
+            if (lower.includes('4k') || lower.includes('oled') || lower.includes('rog') || lower.includes('ultrasharp')) {
+                return { base: 11500000, note: "Màn hình cao cấp 4K / OLED / Đồ họa", chips: [8900000, 11500000, 14500000] };
+            }
+            if (lower.includes('27') && (lower.includes('144') || lower.includes('165') || lower.includes('180') || lower.includes('240') || lower.includes('gaming'))) {
+                return { base: 4500000, note: "Màn hình 27 inch Gaming tần số quét cao", chips: [3890000, 4500000, 5800000] };
+            }
+            if (lower.includes('24') && (lower.includes('144') || lower.includes('165') || lower.includes('180'))) {
+                return { base: 3100000, note: "Màn hình 24 inch Gaming phổ thông", chips: [2790000, 3190000, 3690000] };
+            }
+            if (lower.includes('27')) {
+                return { base: 3400000, note: "Màn hình 27 inch văn phòng / giải trí", chips: [2990000, 3490000, 4200000] };
+            }
+            return { base: 2600000, note: "Màn hình 24 inch tiêu chuẩn", chips: [2200000, 2600000, 3200000] };
         }
+
+        // 2. Điện thoại / Tablet
+        if (lower.includes('iphone') || lower.includes('samsung galaxy') || lower.includes('ipad') || lower.includes('điện thoại')) {
+            if (lower.includes('pro max') || lower.includes('ultra')) {
+                return { base: 28000000, note: "Flagship cao cấp", chips: [24900000, 28500000, 32000000] };
+            }
+            return { base: 12000000, note: "Smartphone / Tablet tầm trung - cận cao cấp", chips: [8500000, 12000000, 16000000] };
+        }
+
+        // 3. Laptop / Máy tính
+        if (lower.includes('laptop') || lower.includes('macbook') || lower.includes('pc')) {
+            if (lower.includes('gaming') || lower.includes('macbook')) {
+                return { base: 23000000, note: "Laptop Gaming / Đồ họa / Macbook", chips: [18900000, 23500000, 29000000] };
+            }
+            return { base: 14500000, note: "Laptop học tập & văn phòng", chips: [11500000, 14500000, 17900000] };
+        }
+
+        // 4. Tai nghe / Phím chuột
+        if (lower.includes('tai nghe') || lower.includes('headphone') || lower.includes('earbuds') || lower.includes('airpods')) {
+            if (lower.includes('pro') || lower.includes('sony') || lower.includes('airpods')) {
+                return { base: 4200000, note: "Tai nghe chống ồn cao cấp", chips: [2900000, 4200000, 5900000] };
+            }
+            return { base: 850000, note: "Tai nghe không dây phổ thông", chips: [450000, 850000, 1350000] };
+        }
+
+        if (lower.includes('bàn phím') || lower.includes('keyboard') || lower.includes('chuột')) {
+            return { base: 1200000, note: "Phụ kiện cơ / Chuột gaming", chips: [650000, 1200000, 2100000] };
+        }
+
+        // Mặc định đồ công nghệ chung
+        return { base: 3000000, note: "Mức giá ước lượng phổ biến", chips: [1500000, 3000000, 6000000] };
     }
 
-    async function analyzeProductWithAI() {
+    function analyzeProduct() {
         const nameInput = document.getElementById('name');
         const productName = nameInput.value.trim();
         const aiBox = document.getElementById('ai-box');
 
         if (!productName) {
-            alert("Vui lòng nhập tên sản phẩm trước khi tìm kiếm!");
+            alert("Vui lòng nhập tên sản phẩm trước khi xem gợi ý!");
             nameInput.focus();
             return;
         }
 
-        aiBox.classList.add('active');
-        aiBox.innerHTML = `<span style="font-size:0.85rem; color:#7e22ce;">⏳ Đang tìm kiếm giá & sàn bán uy tín cho "${productName}"...</span>`;
-
-        // Tạo sẵn các link tìm kiếm nhanh trên các sàn thương mại
         const queryEncoded = encodeURIComponent(productName);
         const shopLinks = [
             { name: "Shopee", url: `https://shopee.vn/search?keyword=${queryEncoded}` },
             { name: "CellphoneS", url: `https://cellphones.com.vn/catalogsearch/result?q=${queryEncoded}` },
             { name: "Phong Vũ", url: `https://phongvu.vn/search?q=${queryEncoded}` },
-            { name: "Google Shopping", url: `https://www.google.com/search?tbm=shop&q=${queryEncoded}` }
+            { name: "Google Mua Sắm", url: `https://www.google.com/search?tbm=shop&q=${queryEncoded}` }
         ];
 
-        let estimatedPrice = null;
-        let aiNote = "";
-        const apiKey = localStorage.getItem('user_gemini_api_key');
+        const estimate = estimatePriceFromText(productName);
 
-        // Nếu có API Key, dùng Gemini để dự đoán giá chuẩn xác
-        if (apiKey) {
-            try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [{
-                                text: `Bạn là trợ lý mua sắm. Với sản phẩm: "${productName}". Hãy ước lượng mức giá bán phổ biến tại thị trường Việt Nam (tính bằng VND). Chỉ trả về JSON có cấu trúc đúng định dạng: {"price": 5000000, "note": "Khoảng 4.800.000 - 5.500.000đ"}. Tuyệt đối không thêm chữ ngoài JSON.`
-                            }]
-                        }]
-                    })
-                });
-                const data = await response.json();
-                const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-                if (text) {
-                    const cleanJson = text.replace(/```json|
+        const linksHtml = shopLinks.map(s => 
+            `<a href="${s.url}" target="_blank" class="shop-chip" onclick="applyShopLink('${s.url}')">🔎 ${s.name}</a>`
+        ).join('');
+
+        const chipsHtml = estimate.chips.map(c => 
+            `<span class="price-chip" onclick="applySuggestedPrice(${c})" title="Click để chọn giá này">${formatWithDots(c)} ₫</span>`
+        ).join('');
+
+        aiBox.innerHTML = `
+            <div class="ai-title">
+                <span>💡 Gợi ý giá & Nơi bán</span>
+                <span style="font-size:0.75rem; cursor:pointer; color:#94a3b8;" onclick="this.closest('.ai-recommendation-box').classList.remove('active')">Đóng ✕</span>
+            </div>
+            <div style="font-size: 0.85rem; color: #475569; margin-bottom: 6px;">
+                Phân loại: <b>${estimate.note}</b>
+            </div>
+            <div style="margin-bottom: 8px;">
+                <span style="font-size: 0.8rem; color: #6b21a8; font-weight:600;">Chọn nhanh mức giá:</span><br>
+                ${chipsHtml}
+            </div>
+            <div style="font-size: 0.8rem; font-weight: 600; color: #475569; margin-top: 8px;">So sánh giá thực tế tại sàn:</div>
+            <div class="shop-links-row">${linksHtml}</div>
+        `;
+
+        aiBox.classList.add('active');
+    }
+
+    function applySuggestedPrice(price) {
+        const targetInput = document.getElementById('target');
+        targetInput.value = formatWithDots(price);
+        targetInput.style.transform = "scale(1.05)";
+        setTimeout(() => targetInput.style.transform = "scale(1)", 200);
+    }
+
+    function applyShopLink(url) {
+        const linkInput = document.getElementById('link');
+        if (!linkInput.value) {
+            linkInput.value = url;
+        }
+    }
+
+    /* --- CANVAS HẠT BỤI SAO NỀN --- */
+    const canvas = document.getElementById('particleCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+        constructor() {
+            this.reset();
+            this.y = Math.random() * canvas.height;
+        }
+        reset() {
+            this.x = Math.random() * canvas.width;
+            this.y = canvas.height + Math.random() * 20;
+            this.size = Math.random() * 2.8 + 1.2;
+            this.speedY = Math.random() * 0.7 + 0.3;
+            this.speedX = (Math.random() - 0.5) * 0.4;
+            this.alpha = Math.random() * 0.5 + 0.25;
+            this.color = Math.random() > 0.5 ? '2, 132, 199' : '139, 92, 246';
+        }
+        update() {
+            this.y -= this.speedY;
+            this.x += this.speedX;
+            if (this.y < -10 || this.x < -10 || this.x > canvas.width + 10) this.reset();
+        }
+        draw() {
+            ctx.fillStyle = `rgba(${this.color}, ${this.alpha})`;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    for (let i = 0; i < 40; i++) particles.push(new Particle());
+
+    function animateParticles() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => { p.update(); p.draw(); });
+        requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
+    /* --- QUẢN LÝ DỮ LIỆU MỤC TIÊU --- */
+    const DEFAULT_IMG = "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=150&auto=format&fit=crop&q=60";
+    let goals = JSON.parse(localStorage.getItem('my_orb_goals_v5')) || [];
+
+    function save() {
+        localStorage.setItem('my_orb_goals_v5', JSON.stringify(goals));
+    }
+
+    function formatVND(val) {
+        return formatWithDots(Math.round(val)) + ' ₫';
+    }
+
+    function animateCountUp(element, start, end, duration = 600) {
+        const startTime = performance.now();
+        function update(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const easeOut = 1 - (1 - progress) * (1 - progress);
+            const currentVal = Math.floor(start + (end - start) * easeOut);
+            element.textContent = formatVND(currentVal);
+
+            if (progress < 1) {
+                requestAnimationFrame(update);
+            } else {
+                element.textContent = formatVND(end);
+            }
+        }
+        requestAnimationFrame(update);
+    }
+
+    function calculateDailySavings(target, current, deadlineStr) {
+        if (current >= target) return { status: 'done', text: '🎉 Chúc mừng! Bạn đã đủ tiền để chốt đơn rồi!' };
+        if (!deadlineStr) return { status: 'normal', text: '💡 Thêm ngày muốn mua để hệ thống tính số tiền mỗi ngày.' };
+
+        const now = new Date();
+        const deadline = new Date(deadlineStr);
+        now.setHours(0, 0, 0, 0);
+        deadline.setHours(0, 0, 0, 0);
+
+        const diffTime = deadline.getTime() - now.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays <= 0) return { status: 'warning', text: '⚠️ Đã tới ngày dự kiến mua, hãy nạp thêm để hoàn thành nhé!' };
+
+        const remainingMoney = target - current;
+        const dailyMoney = Math.ceil(remainingMoney / diffDays);
+
+        return {
+            status: 'plan',
+            text: `⏳ Còn <b>${diffDays} ngày</b>. Bạn cần để dành khoảng <b>${formatVND(dailyMoney)}/ngày</b>.`
+        };
+    }
+
+    function renderGoals(animateIdx = null, prevAmount = 0) {
+        const container = document.getElementById('goals-list');
+        container.innerHTML = '';
+
+        if (goals.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 40px; color: var(--text-muted); background: var(--glass-bg); backdrop-filter: blur(16px); border-radius: 20px; border: 1px dashed rgba(203, 213, 225, 0.8);">
+                    <p style="font-size: 1.1rem; font-weight: 600;">Chưa có mục tiêu nào được tạo.</p>
+                    <p style="font-size: 0.85rem; margin-top: 6px;">Hãy thêm món đồ bạn muốn mua ở phía trên!</p>
+                </div>
+            `;
+            return;
+        }
+
+        goals.forEach((goal, idx) => {
+            const percent = Math.min(100, Math.round((goal.current / goal.target) * 100));
+            const isCompleted = goal.current >= goal.target;
+            const imgSrc = goal.image || DEFAULT_IMG;
+            const forecast = calculateDailySavings(goal.target, goal.current, goal.deadline);
+
+            const circumference = 2 * Math.PI * 16;
+            const strokeDashoffset = circumference - (percent / 100) * circumference;
+
+            const card = document.createElement('div');
+            card.className = `goal-card ${animateIdx === idx ? 'deposit-punch' : ''}`;
+            card.innerHTML = `
+                <div class="goal-main">
+                    <img src="${imgSrc}" class="goal-thumb" onerror="this.src='${DEFAULT_IMG}'">
+                    <div class="goal-info">
+                        <div class="goal-header">
+                            <span class="goal-title">${goal.name} ${isCompleted ? '🎊' : ''}</span>
+                            <button class="btn-delete" title="Xóa" onclick="deleteGoal(${idx})">✕</button>
+                        </div>
+                        ${goal.link ? `<a href="${goal.link}" target="_blank" class="goal-link">🔗 Xem nơi bán</a>` : ''}
+                    </div>
+                </div>
+
+                <div class="chart-and-stats">
+                    <div class="pie-chart">
+                        <svg viewBox="0 0 36 36">
+                            <circle class="circle-bg" cx="18" cy="18" r="16"></circle>
+                            <circle class="circle-progress" cx="18" cy="18" r="16"
+                                stroke="${isCompleted ? 'var(--success)' : 'var(--primary)'}"
+                                stroke-dasharray="${circumference}"
+                                stroke-dashoffset="${circumference}"></circle>
+                        </svg>
+                        <span class="pie-text">${percent}%</span>
+                    </div>
+                    <div class="stats-text">
+                        <div class="stats-money" id="money-${idx}">${formatVND(goal.current)}</div>
+                        <div class="stats-sub">Mục tiêu: ${formatVND(goal.target)}</div>
+                    </div>
+                </div>
+
+                <div class="forecast-box ${isCompleted ? 'completed' : ''}">
+                    ${forecast.text}
+                </div>
+
+                <div class="deposit-row">
+                    <div class="input-suggest-container" style="flex: 1;">
+                        <input type="text" inputmode="numeric" id="dep-${idx}" placeholder="Nhập tiền nạp (VD: 50.000)..." oninput="handleMoneyInput(this, 'dep-suggest-${idx}')">
+                        <div id="dep-suggest-${idx}" class="suggest-dropdown"></div>
+                    </div>
+                    <button class="btn-add" onclick="depositMoney(${idx})">+ Nạp tiền</button>
+                </div>
+            `;
+            container.appendChild(card);
+
+            setTimeout(() => {
+                const circle = card.querySelector('.circle-progress');
+                if (circle) circle.style.strokeDashoffset = strokeDashoffset;
+            }, 60);
+
+            if (animateIdx === idx) {
+                const moneyEl = card.querySelector(`#money-${idx}`);
+                animateCountUp(moneyEl, prevAmount, goal.current);
+            }
+        });
+    }
+
+    function createGoal() {
+        const name = document.getElementById('name').value.trim();
+        const target = parseMoney(document.getElementById('target').value);
+        const current = parseMoney(document.getElementById('current').value) || 0;
+        const deadline = document.getElementById('deadline').value;
+        const link = document.getElementById('link').value.trim();
+        const image = document.getElementById('image').value.trim();
+
+        if (!name || isNaN(target) || target <= 0) {
+            alert('Vui lòng nhập tên sản phẩm và số tiền hợp lệ!');
+            return;
+        }
+
+        goals.push({ name, target, current, deadline, link, image });
+        save();
+        renderGoals();
+
+        document.getElementById('name').value = '';
+        document.getElementById('target').value = '';
+        document.getElementById('current').value = '';
+        document.getElementById('deadline').value = '';
+        document.getElementById('link').value = '';
+        document.getElementById('image').value = '';
+        document.getElementById('ai-box').classList.remove('active');
+    }
+
+    function depositMoney(idx) {
+        const input = document.getElementById(`dep-${idx}`);
+        const amount = parseMoney(input.value);
+
+        if (isNaN(amount) || amount === 0) return;
+
+        const prevCurrent = goals[idx].current;
+        goals[idx].current = Math.max(0, goals[idx].current + amount);
+
+        if (goals[idx].current >= goals[idx].target && prevCurrent < goals[idx].target) {
+            triggerVictoryConfetti();
+        }
+
+        save();
+        renderGoals(idx, prevCurrent);
+    }
+
+    function triggerVictoryConfetti() {
+        if (typeof confetti !== 'function') return;
+        const count = 200;
+        const defaults = { origin: { y: 0.7 } };
+
+        function fire(particleRatio, opts) {
+            confetti(Object.assign({}, defaults, opts, {
+                particleCount: Math.floor(count * particleRatio)
+            }));
+        }
+
+        fire(0.25, { spread: 26, startVelocity: 55 });
+        fire(0.2, { spread: 60 });
+        fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+        fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+        fire(0.1, { spread: 120, startVelocity: 45 });
+    }
+
+    function deleteGoal(idx) {
+        if (confirm(`Bạn muốn xóa "${goals[idx].name}"?`)) {
+            goals.splice(idx, 1);
+            save();
+            renderGoals();
+        }
+    }
+
+    renderGoals();
+</script>
+
+</body>
+</html>
