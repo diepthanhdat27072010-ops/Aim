@@ -15,7 +15,7 @@
             --success: #10b981;
             --success-glow: rgba(16, 185, 129, 0.3);
             --danger: #ef4444;
-            --glass-bg: rgba(255, 255, 255, 0.82);
+            --glass-bg: rgba(255, 255, 255, 0.85);
             --glass-sub: rgba(241, 245, 249, 0.7);
             --glass-border: rgba(255, 255, 255, 0.65);
             --glass-shadow: 0 16px 36px -10px rgba(15, 23, 42, 0.08), 0 0 1px 1px rgba(255, 255, 255, 0.8) inset;
@@ -52,25 +52,9 @@
             mix-blend-mode: multiply;
         }
 
-        .orb-1 { width: 380px; height: 380px; background: #38bdf8; top: -60px; left: -80px; animation: moveOrb1 22s ease-in-out infinite alternate; }
-        .orb-2 { width: 420px; height: 420px; background: #34d399; bottom: -100px; right: -100px; animation: moveOrb2 25s ease-in-out infinite alternate; }
-        .orb-3 { width: 320px; height: 320px; background: #f472b6; top: 40%; left: 60%; animation: moveOrb3 20s ease-in-out infinite alternate; }
-
-        @keyframes moveOrb1 {
-            0% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(120px, 140px) scale(1.15); }
-            100% { transform: translate(60px, 280px) scale(0.9); }
-        }
-        @keyframes moveOrb2 {
-            0% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(-140px, -120px) scale(1.1); }
-            100% { transform: translate(-80px, -260px) scale(0.95); }
-        }
-        @keyframes moveOrb3 {
-            0% { transform: translate(0, 0) scale(0.9); }
-            50% { transform: translate(-100px, 80px) scale(1.2); }
-            100% { transform: translate(80px, -100px) scale(1); }
-        }
+        .orb-1 { width: 380px; height: 380px; background: #38bdf8; top: -60px; left: -80px; }
+        .orb-2 { width: 420px; height: 420px; background: #34d399; bottom: -100px; right: -100px; }
+        .orb-3 { width: 320px; height: 320px; background: #f472b6; top: 40%; left: 60%; }
 
         #particleCanvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; }
 
@@ -98,19 +82,9 @@
             margin-bottom: 24px;
             border: 1px solid var(--glass-border);
             box-shadow: var(--glass-shadow);
-            animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .form-title {
-            font-size: 1.15rem;
-            font-weight: 700;
-            margin-bottom: 16px;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
+        .form-title { font-size: 1.15rem; font-weight: 700; margin-bottom: 16px; color: var(--text-main); }
         .form-grid { display: flex; flex-direction: column; gap: 14px; }
         .row { display: flex; gap: 12px; }
         .row .form-group { flex: 1; }
@@ -136,11 +110,46 @@
             transform: translateY(-1px);
         }
 
-        .input-with-btn {
+        /* Bộ nút tăng giảm số lượng */
+        .qty-control {
             display: flex;
-            gap: 8px;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1.5px solid rgba(203, 213, 225, 0.7);
+            border-radius: 12px;
+            overflow: hidden;
+            height: 42px;
         }
 
+        .qty-btn {
+            background: transparent;
+            border: none;
+            width: 38px;
+            height: 100%;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .qty-btn:hover { background: #e2e8f0; }
+
+        .qty-input {
+            flex: 1;
+            text-align: center;
+            border: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+            font-weight: 700;
+            padding: 0 !important;
+            width: 50px;
+        }
+
+        .input-with-btn { display: flex; gap: 8px; }
         .input-with-btn input { flex: 1; }
 
         .btn-ai-search {
@@ -157,15 +166,10 @@
             align-items: center;
             gap: 6px;
             font-weight: 600;
-            transition: all 0.2s ease;
         }
 
-        .btn-ai-search:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
-        }
+        .btn-ai-search:hover { transform: translateY(-1px); }
 
-        /* Hộp gợi ý thông minh */
         .ai-recommendation-box {
             display: none;
             background: #faf5ff;
@@ -173,20 +177,10 @@
             border-radius: 14px;
             padding: 14px;
             margin-top: 4px;
-            animation: fadeInDown 0.3s ease-out;
         }
 
         .ai-recommendation-box.active { display: block; }
-
-        .ai-title {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: #6b21a8;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
+        .ai-title { font-size: 0.85rem; font-weight: 700; color: #6b21a8; margin-bottom: 8px; display: flex; justify-content: space-between; }
 
         .price-chip {
             background: #f3e8ff;
@@ -198,23 +192,12 @@
             border: 1px solid #d8b4fe;
             display: inline-block;
             margin: 2px 4px 2px 0;
-            transition: all 0.2s ease;
             font-size: 0.85rem;
         }
 
-        .price-chip:hover {
-            background: #7e22ce;
-            color: white;
-            transform: translateY(-1px);
-        }
+        .price-chip:hover { background: #7e22ce; color: white; }
 
-        .shop-links-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
+        .shop-links-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
         .shop-chip {
             text-decoration: none;
             background: white;
@@ -227,14 +210,9 @@
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            transition: all 0.2s ease;
         }
 
-        .shop-chip:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-            transform: translateY(-1px);
-        }
+        .shop-chip:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-1px); }
 
         /* Popup gợi ý bội số tiền */
         .input-suggest-container { position: relative; width: 100%; }
@@ -254,7 +232,6 @@
             max-height: 200px;
             overflow-y: auto;
             display: none;
-            animation: fadeInDown 0.2s ease-out;
         }
 
         .suggest-dropdown.active { display: block; }
@@ -292,30 +269,30 @@
             font-size: 1rem;
             margin-top: 6px;
             box-shadow: 0 6px 18px var(--primary-glow);
-            position: relative;
-            overflow: hidden;
         }
 
         .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--primary-glow); }
 
+        .total-preview {
+            font-size: 0.85rem;
+            color: #0369a1;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        /* Thẻ mục tiêu */
         .goal-card {
             background: var(--glass-bg);
             backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--glass-border);
             border-radius: 20px;
             padding: 20px;
             margin-bottom: 20px;
             box-shadow: var(--glass-shadow);
-            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-            animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            transition: all 0.35s ease;
         }
 
-        .goal-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 24px 40px -12px rgba(2, 132, 199, 0.16);
-            border-color: rgba(255, 255, 255, 0.95);
-        }
+        .goal-card:hover { transform: translateY(-4px); box-shadow: 0 20px 35px -10px rgba(2, 132, 199, 0.15); }
 
         .goal-main { display: flex; gap: 16px; align-items: center; }
         .goal-thumb {
@@ -326,23 +303,24 @@
             background: rgba(241, 245, 249, 0.7);
             border: 1px solid var(--glass-border);
             flex-shrink: 0;
-            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        .goal-card:hover .goal-thumb { transform: scale(1.06) rotate(-2deg); }
         .goal-info { flex: 1; display: flex; flex-direction: column; gap: 4px; }
         .goal-header { display: flex; justify-content: space-between; align-items: flex-start; }
         .goal-title { font-size: 1.15rem; font-weight: 700; color: var(--text-main); }
-
-        .btn-delete {
-            background: transparent;
-            color: #94a3b8;
-            font-size: 1.2rem;
-            padding: 2px 6px;
-            border-radius: 8px;
+        .goal-badge {
+            display: inline-block;
+            background: #e0f2fe;
+            color: #0284c7;
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            width: fit-content;
         }
 
-        .btn-delete:hover { color: var(--danger); background: #fee2e2; transform: rotate(90deg); }
+        .btn-delete { background: transparent; color: #94a3b8; font-size: 1.2rem; padding: 2px 6px; }
+        .btn-delete:hover { color: var(--danger); background: #fee2e2; border-radius: 8px; }
 
         .goal-link {
             font-size: 0.8rem;
@@ -372,7 +350,7 @@
         .pie-chart svg { transform: rotate(-90deg); width: 100%; height: 100%; }
         .pie-chart circle { fill: none; stroke-width: 3.8; stroke-linecap: round; }
         .circle-bg { stroke: rgba(226, 232, 240, 0.8); }
-        .circle-progress { stroke: var(--primary); transition: stroke-dashoffset 0.8s cubic-bezier(0.16, 1, 0.3, 1), stroke 0.4s ease; }
+        .circle-progress { stroke: var(--primary); transition: stroke-dashoffset 0.8s ease; }
         .pie-text {
             position: absolute;
             top: 50%;
@@ -408,8 +386,6 @@
 
         @keyframes float { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-5px) rotate(5deg); } }
         @keyframes fadeInDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes scaleIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
-        @keyframes slideUpFade { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -423,33 +399,44 @@
 <div class="container">
     <div class="header">
         <h1><span class="floating-icon">🎯</span> Mục Tiêu Mua Sắm</h1>
-        <p>Lập kế hoạch tiết kiệm & khảo sát nơi bán tối ưu</p>
+        <p>Lập kế hoạch tiết kiệm & quản lý số lượng sản phẩm</p>
     </div>
 
     <!-- Form Thêm Mục Tiêu -->
     <div class="card">
-        <div class="form-title">
-            <span>✨ Thêm mục tiêu mới</span>
-        </div>
+        <div class="form-title">✨ Thêm mục tiêu mới</div>
         <div class="form-grid">
             <div class="form-group">
                 <label>Tên món đồ / Thiết bị *</label>
                 <div class="input-with-btn">
-                    <input type="text" id="name" placeholder="Ví dụ: Màn hình ASUS TUF 27 inch 180Hz">
+                    <input type="text" id="name" placeholder="Ví dụ: Màn hình ASUS TUF 27 inch">
                     <button type="button" class="btn-ai-search" onclick="analyzeProduct()">⚡ Gợi Ý Giá</button>
                 </div>
-                <!-- Box gợi ý thông minh -->
                 <div id="ai-box" class="ai-recommendation-box"></div>
             </div>
 
+            <!-- Hàng: Đơn giá và Số lượng -->
             <div class="row">
-                <div class="form-group">
-                    <label>Giá cần tiết kiệm (VNĐ) *</label>
+                <div class="form-group" style="flex: 2;">
+                    <label>Đơn giá 1 cái (VNĐ) *</label>
                     <div class="input-suggest-container">
-                        <input type="text" inputmode="numeric" id="target" placeholder="Ví dụ: 4.500.000" oninput="handleMoneyInput(this, 'target-suggest')">
-                        <div id="target-suggest" class="suggest-dropdown"></div>
+                        <input type="text" inputmode="numeric" id="price" placeholder="Ví dụ: 4.500.000" oninput="handlePriceInput(this, 'price-suggest')">
+                        <div id="price-suggest" class="suggest-dropdown"></div>
+                    </div>
+                    <div id="totalPreview" class="total-preview"></div>
+                </div>
+
+                <div class="form-group" style="flex: 1;">
+                    <label>Số lượng</label>
+                    <div class="qty-control">
+                        <button type="button" class="qty-btn" onclick="changeQty(-1)">−</button>
+                        <input type="number" id="qty" class="qty-input" value="1" min="1" oninput="updateTotalPreview()">
+                        <button type="button" class="qty-btn" onclick="changeQty(1)">+</button>
                     </div>
                 </div>
+            </div>
+
+            <div class="row">
                 <div class="form-group">
                     <label>Tiền hiện có (VNĐ)</label>
                     <div class="input-suggest-container">
@@ -457,22 +444,21 @@
                         <div id="current-suggest" class="suggest-dropdown"></div>
                     </div>
                 </div>
-            </div>
-
-            <div class="row">
                 <div class="form-group">
                     <label>Ngày muốn mua (Dự đoán tiến độ)</label>
                     <input type="date" id="deadline">
                 </div>
+            </div>
+
+            <div class="row">
                 <div class="form-group">
                     <label>Link mua hàng</label>
                     <input type="url" id="link" placeholder="https://...">
                 </div>
-            </div>
-
-            <div class="form-group">
-                <label>Link ảnh sản phẩm (URL)</label>
-                <input type="url" id="image" placeholder="Dán link ảnh hoặc để trống">
+                <div class="form-group">
+                    <label>Link ảnh sản phẩm (URL)</label>
+                    <input type="url" id="image" placeholder="Dán link ảnh hoặc để trống">
+                </div>
             </div>
 
             <button class="btn-submit" onclick="createGoal()">+ Lưu Kế Hoạch</button>
@@ -484,7 +470,7 @@
 </div>
 
 <script>
-    /* --- BỘ XỬ LÝ ĐỊNH DẠNG DẤU CHẤM --- */
+    /* --- BỘ ĐỊNH DẠNG SỐ & DẤU CHẤM HÀNG NGHÌN --- */
     function formatWithDots(rawStr) {
         const cleanNumber = String(rawStr).replace(/\D/g, '');
         if (!cleanNumber) return '';
@@ -505,6 +491,11 @@
         { factor: 10000000, label: 'chục triệu' },
         { factor: 100000000, label: 'trăm triệu' }
     ];
+
+    function handlePriceInput(inputEl, dropdownId) {
+        handleMoneyInput(inputEl, dropdownId);
+        updateTotalPreview();
+    }
 
     function handleMoneyInput(inputEl, dropdownId) {
         const rawDigits = inputEl.value.replace(/\D/g, '');
@@ -537,7 +528,10 @@
 
     function selectSuggestion(inputId, amount, dropdownId) {
         const inputEl = document.getElementById(inputId);
-        if (inputEl) inputEl.value = formatWithDots(amount);
+        if (inputEl) {
+            inputEl.value = formatWithDots(amount);
+            if (inputId === 'price') updateTotalPreview();
+        }
         const dropdown = document.getElementById(dropdownId);
         if (dropdown) dropdown.classList.remove('active');
     }
@@ -548,7 +542,29 @@
         }
     });
 
-    /* --- BỘ PHÂN TÍCH GIÁ & TẠO LINK MỞ TAB MỚI --- */
+    /* --- XỬ LÝ SỐ LƯỢNG & TÍNH TỔNG TIỀN TRỰC TIẾP --- */
+    function changeQty(delta) {
+        const qtyInput = document.getElementById('qty');
+        let currentQty = parseInt(qtyInput.value) || 1;
+        currentQty = Math.max(1, currentQty + delta);
+        qtyInput.value = currentQty;
+        updateTotalPreview();
+    }
+
+    function updateTotalPreview() {
+        const price = parseMoney(document.getElementById('price').value);
+        const qty = parseInt(document.getElementById('qty').value) || 1;
+        const totalBox = document.getElementById('totalPreview');
+
+        if (price > 0 && qty > 1) {
+            const total = price * qty;
+            totalBox.innerHTML = `👉 Tổng tiền cần: <b>${formatWithDots(total)} ₫</b> (${qty} cái)`;
+        } else {
+            totalBox.innerHTML = '';
+        }
+    }
+
+    /* --- PHÂN TÍCH GIÁ THỊ TRƯỜNG --- */
     function estimatePriceFromText(text) {
         const lower = text.toLowerCase();
         if (lower.includes('màn hình') || lower.includes('monitor')) {
@@ -583,7 +599,6 @@
         ];
 
         const estimate = estimatePriceFromText(productName);
-
         const linksHtml = shopLinks.map(s => 
             `<a href="${s.url}" target="_blank" class="shop-chip" onclick="applyShopLink('${s.url}')">🔎 ${s.name}</a>`
         ).join('');
@@ -594,11 +609,11 @@
 
         aiBox.innerHTML = `
             <div class="ai-title">
-                <span>💡 Gợi ý giá: <b>${estimate.note}</b></span>
+                <span>💡 Gợi ý giá đơn vị: <b>${estimate.note}</b></span>
                 <span style="cursor:pointer; color:#94a3b8;" onclick="this.closest('.ai-recommendation-box').classList.remove('active')">✕</span>
             </div>
             <div style="margin-bottom: 8px;">
-                <span style="font-size: 0.8rem; color: #6b21a8; font-weight:600;">Chọn nhanh mức giá:</span> ${chipsHtml}
+                <span style="font-size: 0.8rem; color: #6b21a8; font-weight:600;">Chọn nhanh đơn giá:</span> ${chipsHtml}
             </div>
             <div style="font-size: 0.8rem; font-weight: 600; color: #475569; margin-top: 6px;">Xem thực tế nơi bán (mở tab mới):</div>
             <div class="shop-links-row">${linksHtml}</div>
@@ -607,7 +622,8 @@
     }
 
     function applySuggestedPrice(price) {
-        document.getElementById('target').value = formatWithDots(price);
+        document.getElementById('price').value = formatWithDots(price);
+        updateTotalPreview();
     }
 
     function applyShopLink(url) {
@@ -652,11 +668,11 @@
     }
     anim();
 
-    /* --- QUẢN LÝ DỮ LIỆU TIẾT KIỆM --- */
+    /* --- QUẢN LÝ DỮ LIỆU MỤC TIÊU --- */
     const DEFAULT_IMG = "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=150&auto=format&fit=crop&q=60";
-    let goals = JSON.parse(localStorage.getItem('my_final_goals')) || [];
+    let goals = JSON.parse(localStorage.getItem('my_qty_goals')) || [];
 
-    function save() { localStorage.setItem('my_final_goals', JSON.stringify(goals)); }
+    function save() { localStorage.setItem('my_qty_goals', JSON.stringify(goals)); }
 
     function formatVND(val) { return formatWithDots(Math.round(val)) + ' ₫'; }
 
@@ -701,6 +717,7 @@
                             <span class="goal-title">${goal.name} ${isCompleted ? '🎊' : ''}</span>
                             <button class="btn-delete" title="Xóa" onclick="deleteGoal(${idx})">✕</button>
                         </div>
+                        <div class="goal-badge">Số lượng: ${goal.qty || 1} cái</div>
                         ${goal.link ? `<a href="${goal.link}" target="_blank" class="goal-link">🔗 Xem nơi bán</a>` : ''}
                     </div>
                 </div>
@@ -718,7 +735,7 @@
                     </div>
                     <div class="stats-text">
                         <div class="stats-money">${formatVND(goal.current)}</div>
-                        <div class="stats-sub">Mục tiêu: ${formatVND(goal.target)}</div>
+                        <div class="stats-sub">Mục tiêu: ${formatVND(goal.target)} ${goal.qty > 1 ? `(${formatVND(goal.price)} × ${goal.qty})` : ''}</div>
                     </div>
                 </div>
 
@@ -738,23 +755,38 @@
 
     function createGoal() {
         const name = document.getElementById('name').value.trim();
-        const target = parseMoney(document.getElementById('target').value);
+        const unitPrice = parseMoney(document.getElementById('price').value);
+        const qty = parseInt(document.getElementById('qty').value) || 1;
         const current = parseMoney(document.getElementById('current').value) || 0;
         const deadline = document.getElementById('deadline').value;
         const link = document.getElementById('link').value.trim();
         const image = document.getElementById('image').value.trim();
 
-        if (!name || isNaN(target) || target <= 0) {
-            alert('Vui lòng nhập tên món đồ và số tiền!');
+        if (!name || isNaN(unitPrice) || unitPrice <= 0) {
+            alert('Vui lòng nhập tên sản phẩm và đơn giá hợp lệ!');
             return;
         }
 
-        goals.push({ name, target, current, deadline, link, image });
+        const target = unitPrice * qty;
+
+        goals.push({ 
+            name, 
+            price: unitPrice, 
+            qty, 
+            target, 
+            current, 
+            deadline, 
+            link, 
+            image 
+        });
         save();
         renderGoals();
 
+        // Xóa form
         document.getElementById('name').value = '';
-        document.getElementById('target').value = '';
+        document.getElementById('price').value = '';
+        document.getElementById('qty').value = '1';
+        document.getElementById('totalPreview').innerHTML = '';
         document.getElementById('current').value = '';
         document.getElementById('deadline').value = '';
         document.getElementById('link').value = '';
