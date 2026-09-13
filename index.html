@@ -47,7 +47,6 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Quả cầu phát sáng nền */
         .glow-orb {
             position: fixed;
             border-radius: 50%;
@@ -216,7 +215,6 @@
             transform: translateY(-1px);
         }
 
-        /* --- POPUP GỢI Ý TIỀN --- */
         .input-suggest-container {
             position: relative;
             width: 100%;
@@ -585,14 +583,14 @@
                 <div class="form-group">
                     <label>Giá cần tiết kiệm (VNĐ) *</label>
                     <div class="input-suggest-container">
-                        <input type="number" id="target" placeholder="Ví dụ: 5" oninput="showSuggestions(this, 'target-suggest')">
+                        <input type="text" inputmode="numeric" id="target" placeholder="Ví dụ: 1.200.000" oninput="handleMoneyInput(this, 'target-suggest')">
                         <div id="target-suggest" class="suggest-dropdown"></div>
                     </div>
                 </div>
                 <div class="form-group">
                     <label>Tiền hiện có (VNĐ)</label>
                     <div class="input-suggest-container">
-                        <input type="number" id="current" placeholder="0" oninput="showSuggestions(this, 'current-suggest')">
+                        <input type="text" inputmode="numeric" id="current" placeholder="0" oninput="handleMoneyInput(this, 'current-suggest')">
                         <div id="current-suggest" class="suggest-dropdown"></div>
                     </div>
                 </div>
@@ -623,7 +621,19 @@
 </div>
 
 <script>
-    /* --- BỘ HIỂN THỊ GỢI Ý TIỀN BỘI SỐ (AUTO-SUGGEST) --- */
+    /* --- HÀM ĐỊNH DẠNG DẤU CHẤM HÀNG NGHÌN & GỢI Ý TIỀN --- */
+    function formatWithDots(rawStr) {
+        const cleanNumber = String(rawStr).replace(/\D/g, '');
+        if (!cleanNumber) return '';
+        return cleanNumber.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    function parseMoney(val) {
+        if (!val) return 0;
+        const clean = String(val).replace(/\./g, '').trim();
+        return parseFloat(clean) || 0;
+    }
+
     const MULTIPLIERS = [
         { factor: 1000, label: 'nghìn' },
         { factor: 10000, label: 'chục nghìn' },
@@ -634,9 +644,12 @@
         { factor: 1000000000, label: 'tỷ' }
     ];
 
-    function showSuggestions(inputEl, dropdownId) {
+    function handleMoneyInput(inputEl, dropdownId) {
+        const rawDigits = inputEl.value.replace(/\D/g, '');
+        inputEl.value = formatWithDots(rawDigits);
+
         const dropdown = document.getElementById(dropdownId);
-        const val = parseFloat(inputEl.value);
+        const val = parseFloat(rawDigits);
 
         if (isNaN(val) || val <= 0) {
             dropdown.classList.remove('active');
@@ -647,7 +660,7 @@
         let html = '';
         MULTIPLIERS.forEach(item => {
             const calculatedVal = val * item.factor;
-            const formatted = new Intl.NumberFormat('vi-VN').format(calculatedVal);
+            const formatted = formatWithDots(calculatedVal);
             html += `
                 <div class="suggest-item" onclick="selectSuggestion('${inputEl.id}', ${calculatedVal}, '${dropdownId}')">
                     <span>${formatted} đ</span>
@@ -662,12 +675,14 @@
 
     function selectSuggestion(inputId, amount, dropdownId) {
         const inputEl = document.getElementById(inputId);
-        if (inputEl) inputEl.value = amount;
+        if (inputEl) {
+            inputEl.value = formatWithDots(amount);
+        }
         const dropdown = document.getElementById(dropdownId);
         if (dropdown) dropdown.classList.remove('active');
     }
 
-    // Đóng popup gợi ý khi click ra ngoài
+    // Đóng dropdown khi click ra ngoài
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.input-suggest-container')) {
             document.querySelectorAll('.suggest-dropdown').forEach(d => d.classList.remove('active'));
@@ -731,14 +746,14 @@
 
     /* --- LOGIC QUẢN LÝ MỤC TIÊU --- */
     const DEFAULT_IMG = "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=150&auto=format&fit=crop&q=60";
-    let goals = JSON.parse(localStorage.getItem('my_orb_goals_v2')) || [];
+    let goals = JSON.parse(localStorage.getItem('my_orb_goals_v3')) || [];
 
     function save() {
-        localStorage.setItem('my_orb_goals_v2', JSON.stringify(goals));
+        localStorage.setItem('my_orb_goals_v3', JSON.stringify(goals));
     }
 
     function formatVND(val) {
-        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
+        return formatWithDots(Math.round(val)) + ' ₫';
     }
 
     function animateCountUp(element, start, end, duration = 600) {
@@ -792,7 +807,7 @@
             container.innerHTML = `
                 <div style="text-align: center; padding: 40px; color: var(--text-muted); background: var(--glass-bg); backdrop-filter: blur(16px); border-radius: 20px; border: 1px dashed rgba(203, 213, 225, 0.8);">
                     <p style="font-size: 1.1rem; font-weight: 600;">Chưa có mục tiêu nào được tạo.</p>
-                    <p style="font-size: 0.85rem; margin-top: 6px;">Hãy đặt mục tiêu chiếc màn hình bạn thích ở bảng phía trên!</p>
+                    <p style="font-size: 0.85rem; margin-top: 6px;">Hãy đặt mục tiêu món đồ bạn muốn ở bảng phía trên!</p>
                 </div>
             `;
             return;
@@ -844,7 +859,7 @@
 
                 <div class="deposit-row">
                     <div class="input-suggest-container" style="flex: 1;">
-                        <input type="number" id="dep-${idx}" placeholder="Nhập tiền nạp (VD: 50)..." oninput="showSuggestions(this, 'dep-suggest-${idx}')">
+                        <input type="text" inputmode="numeric" id="dep-${idx}" placeholder="Nhập tiền nạp (VD: 50.000)..." oninput="handleMoneyInput(this, 'dep-suggest-${idx}')">
                         <div id="dep-suggest-${idx}" class="suggest-dropdown"></div>
                     </div>
                     <button class="btn-add" onclick="depositMoney(${idx})">+ Nạp tiền</button>
@@ -866,14 +881,14 @@
 
     function createGoal() {
         const name = document.getElementById('name').value.trim();
-        const target = parseFloat(document.getElementById('target').value);
-        const current = parseFloat(document.getElementById('current').value) || 0;
+        const target = parseMoney(document.getElementById('target').value);
+        const current = parseMoney(document.getElementById('current').value) || 0;
         const deadline = document.getElementById('deadline').value;
         const link = document.getElementById('link').value.trim();
         const image = document.getElementById('image').value.trim();
 
         if (!name || isNaN(target) || target <= 0) {
-            alert('Vui lòng nhập tên sản phẩm và giá tiền hợp lệ!');
+            alert('Vui lòng nhập tên sản phẩm và số tiền hợp lệ!');
             return;
         }
 
@@ -891,7 +906,7 @@
 
     function depositMoney(idx) {
         const input = document.getElementById(`dep-${idx}`);
-        const amount = parseFloat(input.value);
+        const amount = parseMoney(input.value);
 
         if (isNaN(amount) || amount === 0) return;
 
