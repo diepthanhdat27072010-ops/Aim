@@ -15,9 +15,7 @@
             --success: #10b981;
             --success-glow: rgba(16, 185, 129, 0.3);
             --danger: #ef4444;
-            --ai-color: #8b5cf6;
-            --ai-glow: rgba(139, 92, 246, 0.3);
-            --glass-bg: rgba(255, 255, 255, 0.82);
+            --glass-bg: rgba(255, 255, 255, 0.85);
             --glass-sub: rgba(241, 245, 249, 0.7);
             --glass-border: rgba(255, 255, 255, 0.65);
             --glass-shadow: 0 16px 36px -10px rgba(15, 23, 42, 0.08), 0 0 1px 1px rgba(255, 255, 255, 0.8) inset;
@@ -27,12 +25,8 @@
 
         body {
             color: var(--text-main);
-            display: flex;
-            justify-content: center;
-            padding: 40px 16px 80px;
             min-height: 100vh;
             overflow-x: hidden;
-            position: relative;
             background: linear-gradient(-45deg, #e0f2fe, #f0fdf4, #fae8ff, #f8fafc);
             background-size: 400% 400%;
             animation: gradientBG 18s ease infinite;
@@ -49,72 +43,130 @@
             border-radius: 50%;
             filter: blur(80px);
             z-index: 0;
-            opacity: 0.55;
+            opacity: 0.5;
             pointer-events: none;
-            mix-blend-mode: multiply;
         }
 
-        .orb-1 { width: 380px; height: 380px; background: #38bdf8; top: -60px; left: -80px; animation: moveOrb1 22s ease-in-out infinite alternate; }
-        .orb-2 { width: 420px; height: 420px; background: #34d399; bottom: -100px; right: -100px; animation: moveOrb2 25s ease-in-out infinite alternate; }
-        .orb-3 { width: 320px; height: 320px; background: #f472b6; top: 40%; left: 60%; animation: moveOrb3 20s ease-in-out infinite alternate; }
-
-        @keyframes moveOrb1 {
-            0% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(120px, 140px) scale(1.15); }
-            100% { transform: translate(60px, 280px) scale(0.9); }
-        }
-        @keyframes moveOrb2 {
-            0% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(-140px, -120px) scale(1.1); }
-            100% { transform: translate(-80px, -260px) scale(0.95); }
-        }
-        @keyframes moveOrb3 {
-            0% { transform: translate(0, 0) scale(0.9); }
-            50% { transform: translate(-100px, 80px) scale(1.2); }
-            100% { transform: translate(80px, -100px) scale(1); }
-        }
-
+        .orb-1 { width: 380px; height: 380px; background: #38bdf8; top: -60px; left: -80px; }
+        .orb-2 { width: 420px; height: 420px; background: #34d399; bottom: -100px; right: -100px; }
         #particleCanvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; }
 
-        .container { width: 100%; max-width: 650px; position: relative; z-index: 1; }
+        /* Bố cục chia đôi màn hình (Split Screen Container) */
+        .layout-wrapper {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
 
-        .header { text-align: center; margin-bottom: 26px; animation: fadeInDown 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
-        .header h1 {
-            font-size: 1.9rem;
-            color: #0369a1;
+        /* Nửa trái: Ứng dụng chính */
+        .left-panel {
+            flex: 1;
+            height: 100vh;
+            overflow-y: auto;
+            padding: 30px 20px 80px;
+            display: flex;
+            justify-content: center;
+            transition: flex 0.3s ease;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 620px;
+        }
+
+        /* Nửa phải: Khung trình duyệt nhúng */
+        .right-panel {
+            width: 0%;
+            height: 100vh;
+            display: none;
+            flex-direction: column;
+            background: #ffffff;
+            border-left: 2px solid #cbd5e1;
+            box-shadow: -8px 0 25px rgba(0,0,0,0.08);
+            transition: width 0.3s ease;
+            position: relative;
+        }
+
+        .layout-wrapper.split-active .left-panel {
+            flex: 1;
+        }
+
+        .layout-wrapper.split-active .right-panel {
+            width: 50%;
+            display: flex;
+        }
+
+        /* Thanh điều khiển của trình duyệt nhúng */
+        .browser-toolbar {
+            height: 52px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 10px;
-            text-shadow: 0 2px 8px rgba(2, 132, 199, 0.15);
+            padding: 0 12px;
+            gap: 8px;
         }
-        .floating-icon { display: inline-block; animation: float 3s ease-in-out infinite; }
-        .header p { font-size: 0.95rem; color: var(--text-muted); margin-top: 6px; }
+
+        .browser-url-bar {
+            flex: 1;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            color: #475569;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .browser-btn {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: #475569;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .browser-btn:hover { background: #f1f5f9; color: var(--text-main); }
+        .browser-btn-close { color: var(--danger); font-weight: bold; }
+        .browser-btn-close:hover { background: #fee2e2; }
+
+        .browser-frame {
+            flex: 1;
+            width: 100%;
+            height: calc(100% - 52px);
+            border: none;
+            background: #ffffff;
+        }
+
+        /* Thẻ UI */
+        .header { text-align: center; margin-bottom: 24px; }
+        .header h1 { font-size: 1.8rem; color: #0369a1; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .header p { font-size: 0.9rem; color: var(--text-muted); margin-top: 4px; }
 
         .card {
             background: var(--glass-bg);
             backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
             border-radius: 20px;
-            padding: 24px;
-            margin-bottom: 24px;
+            padding: 22px;
+            margin-bottom: 22px;
             border: 1px solid var(--glass-border);
             box-shadow: var(--glass-shadow);
-            animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .form-title {
-            font-size: 1.15rem;
-            font-weight: 700;
-            margin-bottom: 16px;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .form-grid { display: flex; flex-direction: column; gap: 14px; }
-        .row { display: flex; gap: 12px; }
+        .form-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 14px; }
+        .form-grid { display: flex; flex-direction: column; gap: 12px; }
+        .row { display: flex; gap: 10px; }
         .row .form-group { flex: 1; }
 
         .form-group { display: flex; flex-direction: column; gap: 6px; position: relative; }
@@ -123,393 +175,304 @@
         input {
             background: rgba(255, 255, 255, 0.9);
             border: 1.5px solid rgba(203, 213, 225, 0.7);
-            border-radius: 12px;
-            padding: 10px 14px;
+            border-radius: 10px;
+            padding: 9px 12px;
             color: var(--text-main);
             font-size: 0.95rem;
             outline: none;
-            transition: all 0.25s ease;
+            transition: all 0.2s;
         }
 
-        input:focus {
-            border-color: var(--primary);
-            background: #ffffff;
-            box-shadow: 0 0 0 4px var(--primary-glow);
-            transform: translateY(-1px);
-        }
+        input:focus { border-color: var(--primary); background: #ffffff; box-shadow: 0 0 0 3px var(--primary-glow); }
 
-        .input-with-btn {
-            display: flex;
-            gap: 8px;
-        }
-
+        .input-with-btn { display: flex; gap: 8px; }
         .input-with-btn input { flex: 1; }
 
         .btn-ai-search {
             background: linear-gradient(135deg, #8b5cf6, #6366f1);
             color: white;
             font-size: 0.85rem;
-            padding: 10px 14px;
+            padding: 9px 14px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
             white-space: nowrap;
-            box-shadow: 0 4px 12px var(--ai-glow);
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            font-weight: 600;
         }
 
-        .btn-ai-search:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px var(--ai-glow);
-        }
-
-        /* Hộp gợi ý thông minh */
         .ai-recommendation-box {
             display: none;
             background: #faf5ff;
             border: 1.5px solid #e9d5ff;
-            border-radius: 14px;
-            padding: 14px;
+            border-radius: 12px;
+            padding: 12px;
             margin-top: 4px;
-            animation: fadeInDown 0.3s ease-out;
         }
 
         .ai-recommendation-box.active { display: block; }
-
-        .ai-title {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: #6b21a8;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
+        .ai-title { font-size: 0.85rem; font-weight: 700; color: #6b21a8; margin-bottom: 8px; display: flex; justify-content: space-between; }
 
         .price-chip {
             background: #f3e8ff;
             color: #7e22ce;
-            padding: 4px 10px;
+            padding: 3px 9px;
             border-radius: 999px;
             font-weight: 700;
             cursor: pointer;
             border: 1px solid #d8b4fe;
             display: inline-block;
             margin: 2px 4px 2px 0;
-            transition: all 0.2s ease;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
 
-        .price-chip:hover {
-            background: #7e22ce;
-            color: white;
-            transform: translateY(-1px);
-        }
-
-        .shop-links-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
+        .shop-links-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
         .shop-chip {
-            text-decoration: none;
             background: white;
             color: #334155;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             font-weight: 600;
-            padding: 6px 10px;
+            padding: 5px 10px;
             border-radius: 8px;
             border: 1px solid #cbd5e1;
+            cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            transition: all 0.2s ease;
         }
 
-        .shop-chip:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-            transform: translateY(-1px);
-        }
+        .shop-chip:hover { border-color: var(--primary); color: var(--primary); background: #f0f9ff; }
 
-        /* Popup gợi ý bội số tiền */
+        /* Popup gợi ý tiền */
         .input-suggest-container { position: relative; width: 100%; }
         .input-suggest-container input { width: 100%; }
 
         .suggest-dropdown {
             position: absolute;
-            top: calc(100% + 6px);
+            top: calc(100% + 4px);
             left: 0;
             right: 0;
-            background: rgba(255, 255, 255, 0.96);
-            backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.98);
             border: 1.5px solid rgba(2, 132, 199, 0.25);
-            border-radius: 12px;
-            box-shadow: 0 12px 28px -6px rgba(15, 23, 42, 0.15);
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             z-index: 99;
-            max-height: 200px;
+            max-height: 180px;
             overflow-y: auto;
             display: none;
-            animation: fadeInDown 0.2s ease-out;
         }
 
         .suggest-dropdown.active { display: block; }
-
-        .suggest-item {
-            padding: 9px 14px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #0369a1;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
+        .suggest-item { padding: 8px 12px; font-size: 0.88rem; font-weight: 600; color: #0369a1; cursor: pointer; display: flex; justify-content: space-between; }
         .suggest-item:hover { background: #e0f2fe; }
-        .suggest-tag { font-size: 0.75rem; color: #94a3b8; }
-
-        button {
-            cursor: pointer;
-            border: none;
-            border-radius: 12px;
-            padding: 10px 18px;
-            font-weight: 600;
-            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        button:active { transform: scale(0.96); }
 
         .btn-submit {
             background: linear-gradient(135deg, #0284c7, #0ea5e9);
             color: white;
             width: 100%;
             padding: 12px;
-            font-size: 1rem;
-            margin-top: 6px;
-            box-shadow: 0 6px 18px var(--primary-glow);
-            position: relative;
-            overflow: hidden;
+            border-radius: 10px;
+            border: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 14px var(--primary-glow);
         }
 
-        .btn-submit::after {
-            content: "";
-            position: absolute;
-            top: -50%;
-            left: -60%;
-            width: 40%;
-            height: 200%;
-            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
-            transform: rotate(25deg);
-            animation: shimmer 4s infinite;
-        }
-
-        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--primary-glow); }
-
+        /* Thẻ mục tiêu */
         .goal-card {
             background: var(--glass-bg);
             backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 20px;
+            border-radius: 18px;
+            padding: 18px;
+            margin-bottom: 16px;
             box-shadow: var(--glass-shadow);
-            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-            animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        .goal-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 24px 40px -12px rgba(2, 132, 199, 0.16);
-            border-color: rgba(255, 255, 255, 0.95);
-        }
-
-        .goal-card.deposit-punch { animation: cardPunch 0.4s ease; }
-
-        .goal-main { display: flex; gap: 16px; align-items: center; }
-        .goal-thumb {
-            width: 86px;
-            height: 86px;
-            border-radius: 14px;
-            object-fit: cover;
-            background: rgba(241, 245, 249, 0.7);
-            border: 1px solid var(--glass-border);
-            flex-shrink: 0;
-            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        .goal-card:hover .goal-thumb { transform: scale(1.06) rotate(-2deg); }
+        .goal-main { display: flex; gap: 14px; align-items: center; }
+        .goal-thumb { width: 80px; height: 80px; border-radius: 12px; object-fit: cover; background: #f1f5f9; flex-shrink: 0; }
         .goal-info { flex: 1; display: flex; flex-direction: column; gap: 4px; }
         .goal-header { display: flex; justify-content: space-between; align-items: flex-start; }
-        .goal-title { font-size: 1.15rem; font-weight: 700; color: var(--text-main); }
+        .goal-title { font-size: 1.05rem; font-weight: 700; }
+        .btn-delete { background: transparent; border: none; color: #94a3b8; font-size: 1.1rem; cursor: pointer; }
+        .btn-delete:hover { color: var(--danger); }
 
-        .btn-delete {
-            background: transparent;
-            color: #94a3b8;
-            font-size: 1.2rem;
-            padding: 2px 6px;
-            border-radius: 8px;
-        }
-
-        .btn-delete:hover { color: var(--danger); background: #fee2e2; transform: rotate(90deg); }
-
-        .goal-link {
+        .goal-view-btn {
             font-size: 0.8rem;
             color: var(--primary);
-            text-decoration: none;
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
+            font-weight: 600;
+            background: #e0f2fe;
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
             width: fit-content;
         }
-
-        .goal-link:hover { text-decoration: underline; transform: translateX(3px); }
 
         .chart-and-stats {
             display: flex;
             align-items: center;
-            gap: 16px;
-            margin: 16px 0 12px;
-            padding: 14px;
+            gap: 14px;
+            margin: 14px 0 10px;
+            padding: 12px;
             background: var(--glass-sub);
-            border-radius: 14px;
-            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 12px;
         }
 
-        .pie-chart { width: 54px; height: 54px; position: relative; flex-shrink: 0; }
+        .pie-chart { width: 50px; height: 50px; position: relative; flex-shrink: 0; }
         .pie-chart svg { transform: rotate(-90deg); width: 100%; height: 100%; }
         .pie-chart circle { fill: none; stroke-width: 3.8; stroke-linecap: round; }
-        .circle-bg { stroke: rgba(226, 232, 240, 0.8); }
-        .circle-progress { stroke: var(--primary); transition: stroke-dashoffset 0.8s cubic-bezier(0.16, 1, 0.3, 1), stroke 0.4s ease; }
-        .pie-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 0.75rem;
-            font-weight: 700;
-        }
+        .circle-bg { stroke: #cbd5e1; }
+        .circle-progress { stroke: var(--primary); transition: stroke-dashoffset 0.6s ease; }
+        .pie-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 0.75rem; font-weight: 700; }
 
         .stats-text { flex: 1; }
-        .stats-money { font-size: 1.15rem; font-weight: 700; }
-        .stats-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+        .stats-money { font-size: 1.1rem; font-weight: 700; }
+        .stats-sub { font-size: 0.8rem; color: var(--text-muted); }
 
         .forecast-box {
             background: rgba(239, 246, 255, 0.8);
             border: 1px solid #bfdbfe;
-            border-radius: 12px;
-            padding: 10px 14px;
-            margin-bottom: 14px;
-            font-size: 0.85rem;
+            border-radius: 10px;
+            padding: 8px 12px;
+            margin-bottom: 12px;
+            font-size: 0.82rem;
             color: #1e40af;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
-        .forecast-box.completed {
-            background: rgba(220, 252, 231, 0.85);
-            border-color: #86efac;
-            color: #15803d;
-            animation: pulseGlow 2s infinite;
-        }
-
-        .deposit-row { display: flex; gap: 8px; align-items: flex-start; }
+        .deposit-row { display: flex; gap: 8px; }
         .btn-add {
             background: var(--success);
             color: white;
-            padding: 10px 18px;
-            box-shadow: 0 4px 12px var(--success-glow);
+            border: none;
+            border-radius: 10px;
+            padding: 8px 16px;
+            font-weight: 600;
+            cursor: pointer;
             white-space: nowrap;
         }
-        .btn-add:hover { background: #059669; transform: translateY(-1px); }
 
-        @keyframes float { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-5px) rotate(5deg); } }
-        @keyframes shimmer { 0% { left: -60%; } 100% { left: 140%; } }
-        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes scaleIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
-        @keyframes slideUpFade { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes cardPunch { 0% { transform: scale(1); } 40% { transform: scale(1.025); } 100% { transform: scale(1); } }
-        @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.25); } 50% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); } }
+        /* Responsive Mobile: Chuyển sang chia trên / dưới */
+        @media (max-width: 850px) {
+            .layout-wrapper.split-active { flex-direction: column; }
+            .layout-wrapper.split-active .left-panel { flex: 1; height: 55vh; }
+            .layout-wrapper.split-active .right-panel { width: 100%; height: 45vh; border-left: none; border-top: 2px solid #cbd5e1; }
+        }
     </style>
 </head>
 <body>
 
 <div class="glow-orb orb-1"></div>
 <div class="glow-orb orb-2"></div>
-<div class="glow-orb orb-3"></div>
-
 <canvas id="particleCanvas"></canvas>
 
-<div class="container">
-    <div class="header">
-        <h1><span class="floating-icon">🎯</span> Mục Tiêu Mua Sắm</h1>
-        <p>Lập kế hoạch tiết kiệm và trợ lý tìm giá thông minh</p>
+<div class="layout-wrapper" id="layoutWrapper">
+    <!-- NỬA BÊN TRÁI: APP MỤC TIÊU TIẾT KIỆM -->
+    <div class="left-panel">
+        <div class="container">
+            <div class="header">
+                <h1>🎯 Mục Tiêu Mua Sắm</h1>
+                <p>Tiết kiệm thông minh - Xem và so sánh sàn trực tiếp</p>
+            </div>
+
+            <div class="card">
+                <div class="form-title">✨ Thêm mục tiêu mới</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Tên món đồ / Thiết bị *</label>
+                        <div class="input-with-btn">
+                            <input type="text" id="name" placeholder="Ví dụ: Màn hình ASUS TUF 27 inch">
+                            <button type="button" class="btn-ai-search" onclick="analyzeProduct()">⚡ So Sánh Sàn</button>
+                        </div>
+                        <div id="ai-box" class="ai-recommendation-box"></div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group">
+                            <label>Giá cần đạt (VNĐ) *</label>
+                            <div class="input-suggest-container">
+                                <input type="text" inputmode="numeric" id="target" placeholder="Ví dụ: 4.500.000" oninput="handleMoneyInput(this, 'target-suggest')">
+                                <div id="target-suggest" class="suggest-dropdown"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Tiền hiện có (VNĐ)</label>
+                            <div class="input-suggest-container">
+                                <input type="text" inputmode="numeric" id="current" placeholder="0" oninput="handleMoneyInput(this, 'current-suggest')">
+                                <div id="current-suggest" class="suggest-dropdown"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group">
+                            <label>Ngày muốn mua</label>
+                            <input type="date" id="deadline">
+                        </div>
+                        <div class="form-group">
+                            <label>Link mua hàng</label>
+                            <input type="url" id="link" placeholder="https://...">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Link ảnh sản phẩm (URL)</label>
+                        <input type="url" id="image" placeholder="Dán link ảnh hoặc để trống">
+                    </div>
+
+                    <button class="btn-submit" onclick="createGoal()">+ Lưu Kế Hoạch</button>
+                </div>
+            </div>
+
+            <div id="goals-list"></div>
+        </div>
     </div>
 
-    <!-- Form Thêm Mục Tiêu -->
-    <div class="card">
-        <div class="form-title">
-            <span>✨ Thêm mục tiêu mới</span>
+    <!-- NỬA BÊN PHẢI: TRÌNH DUYỆT CHIA ĐÔI MÀN HÌNH -->
+    <div class="right-panel" id="rightPanel">
+        <div class="browser-toolbar">
+            <button class="browser-btn" onclick="refreshFrame()" title="Tải lại trang">🔄 Tải lại</button>
+            <div class="browser-url-bar" id="browserUrlBar">Đang duyệt: https://...</div>
+            <button class="browser-btn" onclick="openExternal()" title="Mở sang tab mới nếu web này chặn nhúng">↗ Mở tab ngoài</button>
+            <button class="browser-btn browser-btn-close" onclick="closeSplitScreen()" title="Đóng chia đôi màn hình">✕ Đóng</button>
         </div>
-        <div class="form-grid">
-            <div class="form-group">
-                <label>Tên món đồ / Thiết bị *</label>
-                <div class="input-with-btn">
-                    <input type="text" id="name" placeholder="Ví dụ: Màn hình ASUS ROG 27 inch 180Hz">
-                    <button type="button" class="btn-ai-search" onclick="analyzeProduct()">⚡ Gợi Ý Giá</button>
-                </div>
-                <!-- Box gợi ý thông minh -->
-                <div id="ai-box" class="ai-recommendation-box"></div>
-            </div>
-
-            <div class="row">
-                <div class="form-group">
-                    <label>Giá cần tiết kiệm (VNĐ) *</label>
-                    <div class="input-suggest-container">
-                        <input type="text" inputmode="numeric" id="target" placeholder="Ví dụ: 5.200.000" oninput="handleMoneyInput(this, 'target-suggest')">
-                        <div id="target-suggest" class="suggest-dropdown"></div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Tiền hiện có (VNĐ)</label>
-                    <div class="input-suggest-container">
-                        <input type="text" inputmode="numeric" id="current" placeholder="0" oninput="handleMoneyInput(this, 'current-suggest')">
-                        <div id="current-suggest" class="suggest-dropdown"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="form-group">
-                    <label>Ngày muốn mua (Dự đoán tiến độ)</label>
-                    <input type="date" id="deadline">
-                </div>
-                <div class="form-group">
-                    <label>Link mua hàng</label>
-                    <input type="url" id="link" placeholder="https://...">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Link ảnh sản phẩm (URL)</label>
-                <input type="url" id="image" placeholder="Dán link ảnh hoặc để trống">
-            </div>
-
-            <button class="btn-submit" onclick="createGoal()">+ Lưu Kế Hoạch</button>
-        </div>
+        <iframe class="browser-frame" id="browserFrame" src="about:blank"></iframe>
     </div>
-
-    <!-- Danh Sách Mục Tiêu -->
-    <div id="goals-list"></div>
 </div>
 
 <script>
-    /* --- BỘ XỬ LÝ ĐỊNH DẠNG DẤU CHẤM --- */
+    /* --- BỘ ĐIỀU KHIỂN CHIA ĐÔI MÀN HÌNH (SPLIT-SCREEN) --- */
+    let currentBrowserUrl = "";
+
+    function openInSplitScreen(url) {
+        if (!url) return;
+        currentBrowserUrl = url;
+        const wrapper = document.getElementById('layoutWrapper');
+        const frame = document.getElementById('browserFrame');
+        const urlBar = document.getElementById('browserUrlBar');
+
+        wrapper.classList.add('split-active');
+        urlBar.textContent = url;
+        frame.src = url;
+    }
+
+    function closeSplitScreen() {
+        const wrapper = document.getElementById('layoutWrapper');
+        const frame = document.getElementById('browserFrame');
+        wrapper.classList.remove('split-active');
+        frame.src = "about:blank";
+    }
+
+    function refreshFrame() {
+        const frame = document.getElementById('browserFrame');
+        if (currentBrowserUrl) frame.src = currentBrowserUrl;
+    }
+
+    function openExternal() {
+        if (currentBrowserUrl) window.open(currentBrowserUrl, '_blank');
+    }
+
+    /* --- BỘ ĐỊNH DẠNG DẤU CHẤM HÀNG NGHÌN & GỢI Ý TIỀN --- */
     function formatWithDots(rawStr) {
         const cleanNumber = String(rawStr).replace(/\D/g, '');
         if (!cleanNumber) return '';
@@ -551,7 +514,7 @@
             html += `
                 <div class="suggest-item" onclick="selectSuggestion('${inputEl.id}', ${calculatedVal}, '${dropdownId}')">
                     <span>${formatted} đ</span>
-                    <span class="suggest-tag">${item.label}</span>
+                    <span style="color:#94a3b8; font-size:0.75rem;">${item.label}</span>
                 </div>
             `;
         });
@@ -573,57 +536,19 @@
         }
     });
 
-    /* --- BỘ PHÂN TÍCH GIÁ THỊ TRƯỜNG OFFLINE (CHẠY NGAY 100%) --- */
-    function estimatePriceFromText(text) {
+    /* --- PHÂN TÍCH GIÁ & MỞ TRANG WEB NỬA MÀN HÌNH --- */
+    function estimatePrice(text) {
         const lower = text.toLowerCase();
-
-        // 1. Màn hình máy tính
-        if (lower.includes('màn hình') || lower.includes('monitor') || lower.includes('display')) {
-            if (lower.includes('4k') || lower.includes('oled') || lower.includes('rog') || lower.includes('ultrasharp')) {
-                return { base: 11500000, note: "Màn hình cao cấp 4K / OLED / Đồ họa", chips: [8900000, 11500000, 14500000] };
+        if (lower.includes('màn hình') || lower.includes('monitor')) {
+            if (lower.includes('27') && (lower.includes('144') || lower.includes('180') || lower.includes('gaming'))) {
+                return { note: "Màn hình 27 inch Gaming", chips: [3890000, 4500000, 5800000] };
             }
-            if (lower.includes('27') && (lower.includes('144') || lower.includes('165') || lower.includes('180') || lower.includes('240') || lower.includes('gaming'))) {
-                return { base: 4500000, note: "Màn hình 27 inch Gaming tần số quét cao", chips: [3890000, 4500000, 5800000] };
-            }
-            if (lower.includes('24') && (lower.includes('144') || lower.includes('165') || lower.includes('180'))) {
-                return { base: 3100000, note: "Màn hình 24 inch Gaming phổ thông", chips: [2790000, 3190000, 3690000] };
-            }
-            if (lower.includes('27')) {
-                return { base: 3400000, note: "Màn hình 27 inch văn phòng / giải trí", chips: [2990000, 3490000, 4200000] };
-            }
-            return { base: 2600000, note: "Màn hình 24 inch tiêu chuẩn", chips: [2200000, 2600000, 3200000] };
+            return { note: "Màn hình tiêu chuẩn", chips: [2490000, 3200000, 4100000] };
         }
-
-        // 2. Điện thoại / Tablet
-        if (lower.includes('iphone') || lower.includes('samsung galaxy') || lower.includes('ipad') || lower.includes('điện thoại')) {
-            if (lower.includes('pro max') || lower.includes('ultra')) {
-                return { base: 28000000, note: "Flagship cao cấp", chips: [24900000, 28500000, 32000000] };
-            }
-            return { base: 12000000, note: "Smartphone / Tablet tầm trung - cận cao cấp", chips: [8500000, 12000000, 16000000] };
+        if (lower.includes('tai nghe') || lower.includes('chuột') || lower.includes('bàn phím')) {
+            return { note: "Phụ kiện máy tính", chips: [550000, 1200000, 2400000] };
         }
-
-        // 3. Laptop / Máy tính
-        if (lower.includes('laptop') || lower.includes('macbook') || lower.includes('pc')) {
-            if (lower.includes('gaming') || lower.includes('macbook')) {
-                return { base: 23000000, note: "Laptop Gaming / Đồ họa / Macbook", chips: [18900000, 23500000, 29000000] };
-            }
-            return { base: 14500000, note: "Laptop học tập & văn phòng", chips: [11500000, 14500000, 17900000] };
-        }
-
-        // 4. Tai nghe / Phím chuột
-        if (lower.includes('tai nghe') || lower.includes('headphone') || lower.includes('earbuds') || lower.includes('airpods')) {
-            if (lower.includes('pro') || lower.includes('sony') || lower.includes('airpods')) {
-                return { base: 4200000, note: "Tai nghe chống ồn cao cấp", chips: [2900000, 4200000, 5900000] };
-            }
-            return { base: 850000, note: "Tai nghe không dây phổ thông", chips: [450000, 850000, 1350000] };
-        }
-
-        if (lower.includes('bàn phím') || lower.includes('keyboard') || lower.includes('chuột')) {
-            return { base: 1200000, note: "Phụ kiện cơ / Chuột gaming", chips: [650000, 1200000, 2100000] };
-        }
-
-        // Mặc định đồ công nghệ chung
-        return { base: 3000000, note: "Mức giá ước lượng phổ biến", chips: [1500000, 3000000, 6000000] };
+        return { note: "Đồ công nghệ", chips: [1500000, 3500000, 7000000] };
     }
 
     function analyzeProduct() {
@@ -632,174 +557,118 @@
         const aiBox = document.getElementById('ai-box');
 
         if (!productName) {
-            alert("Vui lòng nhập tên sản phẩm trước khi xem gợi ý!");
+            alert("Vui lòng nhập tên sản phẩm trước!");
             nameInput.focus();
             return;
         }
 
-        const queryEncoded = encodeURIComponent(productName);
+        const query = encodeURIComponent(productName);
         const shopLinks = [
-            { name: "Shopee", url: `https://shopee.vn/search?keyword=${queryEncoded}` },
-            { name: "CellphoneS", url: `https://cellphones.com.vn/catalogsearch/result?q=${queryEncoded}` },
-            { name: "Phong Vũ", url: `https://phongvu.vn/search?q=${queryEncoded}` },
-            { name: "Google Mua Sắm", url: `https://www.google.com/search?tbm=shop&q=${queryEncoded}` }
+            { name: "CellphoneS", url: `https://cellphones.com.vn/catalogsearch/result?q=${query}` },
+            { name: "Phong Vũ", url: `https://phongvu.vn/search?q=${query}` },
+            { name: "Shopee", url: `https://shopee.vn/search?keyword=${query}` },
+            { name: "Google Shopping", url: `https://www.google.com/search?tbm=shop&q=${query}` }
         ];
 
-        const estimate = estimatePriceFromText(productName);
+        const est = estimatePrice(productName);
 
         const linksHtml = shopLinks.map(s => 
-            `<a href="${s.url}" target="_blank" class="shop-chip" onclick="applyShopLink('${s.url}')">🔎 ${s.name}</a>`
+            `<button type="button" class="shop-chip" onclick="handleShopClick('${s.url}')">🖥️ ${s.name}</button>`
         ).join('');
 
-        const chipsHtml = estimate.chips.map(c => 
-            `<span class="price-chip" onclick="applySuggestedPrice(${c})" title="Click để chọn giá này">${formatWithDots(c)} ₫</span>`
+        const chipsHtml = est.chips.map(c => 
+            `<span class="price-chip" onclick="applySuggestedPrice(${c})">${formatWithDots(c)} ₫</span>`
         ).join('');
 
         aiBox.innerHTML = `
             <div class="ai-title">
-                <span>💡 Gợi ý giá & Nơi bán</span>
-                <span style="font-size:0.75rem; cursor:pointer; color:#94a3b8;" onclick="this.closest('.ai-recommendation-box').classList.remove('active')">Đóng ✕</span>
-            </div>
-            <div style="font-size: 0.85rem; color: #475569; margin-bottom: 6px;">
-                Phân loại: <b>${estimate.note}</b>
+                <span>💡 Gợi ý nhanh: <b>${est.note}</b></span>
+                <span style="cursor:pointer; color:#94a3b8;" onclick="this.closest('.ai-recommendation-box').classList.remove('active')">✕</span>
             </div>
             <div style="margin-bottom: 8px;">
-                <span style="font-size: 0.8rem; color: #6b21a8; font-weight:600;">Chọn nhanh mức giá:</span><br>
-                ${chipsHtml}
+                <span style="font-size: 0.8rem; color: #6b21a8; font-weight:600;">Mức giá phổ biến:</span> ${chipsHtml}
             </div>
-            <div style="font-size: 0.8rem; font-weight: 600; color: #475569; margin-top: 8px;">So sánh giá thực tế tại sàn:</div>
+            <div style="font-size: 0.8rem; font-weight: 600; color: #475569; margin-top: 6px;">Bấm để mở trực tiếp ở nửa màn hình bên cạnh:</div>
             <div class="shop-links-row">${linksHtml}</div>
         `;
-
         aiBox.classList.add('active');
     }
 
+    function handleShopClick(url) {
+        document.getElementById('link').value = url;
+        openInSplitScreen(url);
+    }
+
     function applySuggestedPrice(price) {
-        const targetInput = document.getElementById('target');
-        targetInput.value = formatWithDots(price);
-        targetInput.style.transform = "scale(1.05)";
-        setTimeout(() => targetInput.style.transform = "scale(1)", 200);
+        document.getElementById('target').value = formatWithDots(price);
     }
 
-    function applyShopLink(url) {
-        const linkInput = document.getElementById('link');
-        if (!linkInput.value) {
-            linkInput.value = url;
-        }
-    }
-
-    /* --- CANVAS HẠT BỤI SAO NỀN --- */
+    /* --- CANVAS BỤI SAO NỀN --- */
     const canvas = document.getElementById('particleCanvas');
     const ctx = canvas.getContext('2d');
     let particles = [];
 
-    function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }
+    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
 
     class Particle {
-        constructor() {
-            this.reset();
-            this.y = Math.random() * canvas.height;
-        }
+        constructor() { this.reset(); this.y = Math.random() * canvas.height; }
         reset() {
             this.x = Math.random() * canvas.width;
-            this.y = canvas.height + Math.random() * 20;
-            this.size = Math.random() * 2.8 + 1.2;
-            this.speedY = Math.random() * 0.7 + 0.3;
-            this.speedX = (Math.random() - 0.5) * 0.4;
-            this.alpha = Math.random() * 0.5 + 0.25;
-            this.color = Math.random() > 0.5 ? '2, 132, 199' : '139, 92, 246';
+            this.y = canvas.height + 20;
+            this.size = Math.random() * 2.5 + 1;
+            this.speedY = Math.random() * 0.6 + 0.3;
+            this.alpha = Math.random() * 0.4 + 0.2;
         }
         update() {
             this.y -= this.speedY;
-            this.x += this.speedX;
-            if (this.y < -10 || this.x < -10 || this.x > canvas.width + 10) this.reset();
+            if (this.y < -10) this.reset();
         }
         draw() {
-            ctx.fillStyle = `rgba(${this.color}, ${this.alpha})`;
+            ctx.fillStyle = `rgba(2, 132, 199, ${this.alpha})`;
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
             ctx.fill();
         }
     }
-
-    for (let i = 0; i < 40; i++) particles.push(new Particle());
-
-    function animateParticles() {
+    for (let i = 0; i < 35; i++) particles.push(new Particle());
+    function anim() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         particles.forEach(p => { p.update(); p.draw(); });
-        requestAnimationFrame(animateParticles);
+        requestAnimationFrame(anim);
     }
-    animateParticles();
+    anim();
 
-    /* --- QUẢN LÝ DỮ LIỆU MỤC TIÊU --- */
+    /* --- QUẢN LÝ DỮ LIỆU TIẾT KIỆM --- */
     const DEFAULT_IMG = "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=150&auto=format&fit=crop&q=60";
-    let goals = JSON.parse(localStorage.getItem('my_orb_goals_v5')) || [];
+    let goals = JSON.parse(localStorage.getItem('my_split_goals')) || [];
 
-    function save() {
-        localStorage.setItem('my_orb_goals_v5', JSON.stringify(goals));
-    }
+    function save() { localStorage.setItem('my_split_goals', JSON.stringify(goals)); }
 
-    function formatVND(val) {
-        return formatWithDots(Math.round(val)) + ' ₫';
-    }
-
-    function animateCountUp(element, start, end, duration = 600) {
-        const startTime = performance.now();
-        function update(currentTime) {
-            const elapsed = currentTime - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            const easeOut = 1 - (1 - progress) * (1 - progress);
-            const currentVal = Math.floor(start + (end - start) * easeOut);
-            element.textContent = formatVND(currentVal);
-
-            if (progress < 1) {
-                requestAnimationFrame(update);
-            } else {
-                element.textContent = formatVND(end);
-            }
-        }
-        requestAnimationFrame(update);
-    }
+    function formatVND(val) { return formatWithDots(Math.round(val)) + ' ₫'; }
 
     function calculateDailySavings(target, current, deadlineStr) {
-        if (current >= target) return { status: 'done', text: '🎉 Chúc mừng! Bạn đã đủ tiền để chốt đơn rồi!' };
-        if (!deadlineStr) return { status: 'normal', text: '💡 Thêm ngày muốn mua để hệ thống tính số tiền mỗi ngày.' };
+        if (current >= target) return "🎉 Đã đủ tiền mua sản phẩm!";
+        if (!deadlineStr) return "💡 Thêm ngày muốn mua để tính số tiền mỗi ngày.";
 
         const now = new Date();
         const deadline = new Date(deadlineStr);
-        now.setHours(0, 0, 0, 0);
-        deadline.setHours(0, 0, 0, 0);
+        now.setHours(0,0,0,0); deadline.setHours(0,0,0,0);
 
-        const diffTime = deadline.getTime() - now.getTime();
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        const diffDays = Math.ceil((deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        if (diffDays <= 0) return "⚠️ Đã đến ngày dự kiến mua!";
 
-        if (diffDays <= 0) return { status: 'warning', text: '⚠️ Đã tới ngày dự kiến mua, hãy nạp thêm để hoàn thành nhé!' };
-
-        const remainingMoney = target - current;
-        const dailyMoney = Math.ceil(remainingMoney / diffDays);
-
-        return {
-            status: 'plan',
-            text: `⏳ Còn <b>${diffDays} ngày</b>. Bạn cần để dành khoảng <b>${formatVND(dailyMoney)}/ngày</b>.`
-        };
+        const dailyMoney = Math.ceil((target - current) / diffDays);
+        return `⏳ Còn <b>${diffDays} ngày</b>. Cần để dành khoảng <b>${formatVND(dailyMoney)}/ngày</b>.`;
     }
 
-    function renderGoals(animateIdx = null, prevAmount = 0) {
+    function renderGoals() {
         const container = document.getElementById('goals-list');
         container.innerHTML = '';
 
         if (goals.length === 0) {
-            container.innerHTML = `
-                <div style="text-align: center; padding: 40px; color: var(--text-muted); background: var(--glass-bg); backdrop-filter: blur(16px); border-radius: 20px; border: 1px dashed rgba(203, 213, 225, 0.8);">
-                    <p style="font-size: 1.1rem; font-weight: 600;">Chưa có mục tiêu nào được tạo.</p>
-                    <p style="font-size: 0.85rem; margin-top: 6px;">Hãy thêm món đồ bạn muốn mua ở phía trên!</p>
-                </div>
-            `;
+            container.innerHTML = `<div style="text-align: center; padding: 30px; color: var(--text-muted); background: var(--glass-bg); border-radius: 16px;">Chưa có mục tiêu nào. Hãy lập kế hoạch ở trên!</div>`;
             return;
         }
 
@@ -807,22 +676,20 @@
             const percent = Math.min(100, Math.round((goal.current / goal.target) * 100));
             const isCompleted = goal.current >= goal.target;
             const imgSrc = goal.image || DEFAULT_IMG;
-            const forecast = calculateDailySavings(goal.target, goal.current, goal.deadline);
-
             const circumference = 2 * Math.PI * 16;
             const strokeDashoffset = circumference - (percent / 100) * circumference;
 
             const card = document.createElement('div');
-            card.className = `goal-card ${animateIdx === idx ? 'deposit-punch' : ''}`;
+            card.className = 'goal-card';
             card.innerHTML = `
                 <div class="goal-main">
                     <img src="${imgSrc}" class="goal-thumb" onerror="this.src='${DEFAULT_IMG}'">
                     <div class="goal-info">
                         <div class="goal-header">
                             <span class="goal-title">${goal.name} ${isCompleted ? '🎊' : ''}</span>
-                            <button class="btn-delete" title="Xóa" onclick="deleteGoal(${idx})">✕</button>
+                            <button class="btn-delete" onclick="deleteGoal(${idx})">✕</button>
                         </div>
-                        ${goal.link ? `<a href="${goal.link}" target="_blank" class="goal-link">🔗 Xem nơi bán</a>` : ''}
+                        ${goal.link ? `<button class="goal-view-btn" onclick="openInSplitScreen('${goal.link}')">🖥️ Xem trang bán (Nửa màn hình)</button>` : ''}
                     </div>
                 </div>
 
@@ -833,39 +700,27 @@
                             <circle class="circle-progress" cx="18" cy="18" r="16"
                                 stroke="${isCompleted ? 'var(--success)' : 'var(--primary)'}"
                                 stroke-dasharray="${circumference}"
-                                stroke-dashoffset="${circumference}"></circle>
+                                stroke-dashoffset="${strokeDashoffset}"></circle>
                         </svg>
                         <span class="pie-text">${percent}%</span>
                     </div>
                     <div class="stats-text">
-                        <div class="stats-money" id="money-${idx}">${formatVND(goal.current)}</div>
+                        <div class="stats-money">${formatVND(goal.current)}</div>
                         <div class="stats-sub">Mục tiêu: ${formatVND(goal.target)}</div>
                     </div>
                 </div>
 
-                <div class="forecast-box ${isCompleted ? 'completed' : ''}">
-                    ${forecast.text}
-                </div>
+                <div class="forecast-box">${calculateDailySavings(goal.target, goal.current, goal.deadline)}</div>
 
                 <div class="deposit-row">
                     <div class="input-suggest-container" style="flex: 1;">
-                        <input type="text" inputmode="numeric" id="dep-${idx}" placeholder="Nhập tiền nạp (VD: 50.000)..." oninput="handleMoneyInput(this, 'dep-suggest-${idx}')">
+                        <input type="text" inputmode="numeric" id="dep-${idx}" placeholder="Nhập tiền nạp..." oninput="handleMoneyInput(this, 'dep-suggest-${idx}')">
                         <div id="dep-suggest-${idx}" class="suggest-dropdown"></div>
                     </div>
-                    <button class="btn-add" onclick="depositMoney(${idx})">+ Nạp tiền</button>
+                    <button class="btn-add" onclick="depositMoney(${idx})">+ Nạp</button>
                 </div>
             `;
             container.appendChild(card);
-
-            setTimeout(() => {
-                const circle = card.querySelector('.circle-progress');
-                if (circle) circle.style.strokeDashoffset = strokeDashoffset;
-            }, 60);
-
-            if (animateIdx === idx) {
-                const moneyEl = card.querySelector(`#money-${idx}`);
-                animateCountUp(moneyEl, prevAmount, goal.current);
-            }
         });
     }
 
@@ -878,7 +733,7 @@
         const image = document.getElementById('image').value.trim();
 
         if (!name || isNaN(target) || target <= 0) {
-            alert('Vui lòng nhập tên sản phẩm và số tiền hợp lệ!');
+            alert('Vui lòng nhập tên sản phẩm và giá tiền!');
             return;
         }
 
@@ -898,40 +753,20 @@
     function depositMoney(idx) {
         const input = document.getElementById(`dep-${idx}`);
         const amount = parseMoney(input.value);
-
         if (isNaN(amount) || amount === 0) return;
 
-        const prevCurrent = goals[idx].current;
+        const prev = goals[idx].current;
         goals[idx].current = Math.max(0, goals[idx].current + amount);
 
-        if (goals[idx].current >= goals[idx].target && prevCurrent < goals[idx].target) {
-            triggerVictoryConfetti();
+        if (goals[idx].current >= goals[idx].target && prev < goals[idx].target) {
+            if (typeof confetti === 'function') confetti({ particleCount: 150, spread: 70 });
         }
-
         save();
-        renderGoals(idx, prevCurrent);
-    }
-
-    function triggerVictoryConfetti() {
-        if (typeof confetti !== 'function') return;
-        const count = 200;
-        const defaults = { origin: { y: 0.7 } };
-
-        function fire(particleRatio, opts) {
-            confetti(Object.assign({}, defaults, opts, {
-                particleCount: Math.floor(count * particleRatio)
-            }));
-        }
-
-        fire(0.25, { spread: 26, startVelocity: 55 });
-        fire(0.2, { spread: 60 });
-        fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
-        fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
-        fire(0.1, { spread: 120, startVelocity: 45 });
+        renderGoals();
     }
 
     function deleteGoal(idx) {
-        if (confirm(`Bạn muốn xóa "${goals[idx].name}"?`)) {
+        if (confirm(`Xóa "${goals[idx].name}"?`)) {
             goals.splice(idx, 1);
             save();
             renderGoals();
