@@ -8,19 +8,17 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root {
-            --bg-body: #f8fafc;
-            --surface: #ffffff;
-            --surface-sub: #f1f5f9;
             --text-main: #0f172a;
             --text-muted: #64748b;
             --primary: #0284c7;
-            --primary-glow: rgba(2, 132, 199, 0.35);
+            --primary-glow: rgba(2, 132, 199, 0.3);
             --success: #10b981;
-            --success-glow: rgba(16, 185, 129, 0.35);
+            --success-glow: rgba(16, 185, 129, 0.3);
             --danger: #ef4444;
-            --border: #e2e8f0;
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
-            --shadow-hover: 0 20px 30px -10px rgba(2, 132, 199, 0.12), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --glass-bg: rgba(255, 255, 255, 0.78);
+            --glass-sub: rgba(241, 245, 249, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.6);
+            --glass-shadow: 0 16px 36px -10px rgba(15, 23, 42, 0.08), 0 0 1px 1px rgba(255, 255, 255, 0.8) inset;
         }
 
         * {
@@ -31,35 +29,115 @@
         }
 
         body {
-            background-color: var(--bg-body);
             color: var(--text-main);
             display: flex;
             justify-content: center;
-            padding: 36px 16px 80px;
+            padding: 40px 16px 80px;
             min-height: 100vh;
             overflow-x: hidden;
+            position: relative;
+            background: linear-gradient(-45deg, #e0f2fe, #f0fdf4, #fae8ff, #f8fafc);
+            background-size: 400% 400%;
+            animation: gradientBG 18s ease infinite;
+        }
+
+        /* 1. Gradient nền trôi dạt */
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 2. Các quả cầu phát sáng trôi nổi (Glow Orbs) */
+        .glow-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 0;
+            opacity: 0.55;
+            pointer-events: none;
+            mix-blend-mode: multiply;
+        }
+
+        .orb-1 {
+            width: 380px;
+            height: 380px;
+            background: #38bdf8;
+            top: -60px;
+            left: -80px;
+            animation: moveOrb1 22s ease-in-out infinite alternate;
+        }
+
+        .orb-2 {
+            width: 420px;
+            height: 420px;
+            background: #34d399;
+            bottom: -100px;
+            right: -100px;
+            animation: moveOrb2 25s ease-in-out infinite alternate;
+        }
+
+        .orb-3 {
+            width: 320px;
+            height: 320px;
+            background: #f472b6;
+            top: 40%;
+            left: 60%;
+            animation: moveOrb3 20s ease-in-out infinite alternate;
+        }
+
+        @keyframes moveOrb1 {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(120px, 140px) scale(1.15); }
+            100% { transform: translate(60px, 280px) scale(0.9); }
+        }
+
+        @keyframes moveOrb2 {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-140px, -120px) scale(1.1); }
+            100% { transform: translate(-80px, -260px) scale(0.95); }
+        }
+
+        @keyframes moveOrb3 {
+            0% { transform: translate(0, 0) scale(0.9); }
+            50% { transform: translate(-100px, 80px) scale(1.2); }
+            100% { transform: translate(80px, -100px) scale(1); }
+        }
+
+        /* 3. Canvas hạt bụi sao nổi */
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
         }
 
         .container {
             width: 100%;
-            max-width: 650px;
+            max-width: 640px;
+            position: relative;
+            z-index: 1;
         }
 
-        /* Tiêu đề & Hiệu ứng icon lắc lư */
+        /* Tiêu đề */
         .header {
             text-align: center;
-            margin-bottom: 24px;
-            animation: fadeInDown 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            margin-bottom: 26px;
+            animation: fadeInDown 0.7s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .header h1 {
-            font-size: 1.85rem;
+            font-size: 1.9rem;
             color: #0369a1;
             letter-spacing: -0.5px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
+            text-shadow: 0 2px 8px rgba(2, 132, 199, 0.15);
         }
 
         .floating-icon {
@@ -73,17 +151,17 @@
             margin-top: 6px;
         }
 
-        /* Thẻ form tạo mục tiêu */
+        /* Khung Form Kính Mờ (Glassmorphism) */
         .card {
-            background: var(--surface);
-            border-radius: 16px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 20px;
             padding: 24px;
             margin-bottom: 24px;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
             animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-            position: relative;
-            overflow: hidden;
         }
 
         .form-title {
@@ -124,9 +202,9 @@
         }
 
         input {
-            background: var(--surface-sub);
-            border: 1.5px solid var(--border);
-            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.85);
+            border: 1.5px solid rgba(203, 213, 225, 0.6);
+            border-radius: 12px;
             padding: 10px 14px;
             color: var(--text-main);
             font-size: 0.95rem;
@@ -136,22 +214,22 @@
 
         input:focus {
             border-color: var(--primary);
-            background: #fff;
-            box-shadow: 0 0 0 3px var(--primary-glow);
+            background: #ffffff;
+            box-shadow: 0 0 0 4px var(--primary-glow);
             transform: translateY(-1px);
         }
 
         button {
             cursor: pointer;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             padding: 10px 18px;
             font-weight: 600;
-            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         button:active {
-            transform: scale(0.95);
+            transform: scale(0.96);
         }
 
         .btn-submit {
@@ -161,12 +239,11 @@
             padding: 12px;
             font-size: 1rem;
             margin-top: 6px;
-            box-shadow: 0 4px 14px var(--primary-glow);
+            box-shadow: 0 6px 18px var(--primary-glow);
             position: relative;
             overflow: hidden;
         }
 
-        /* Hiệu ứng tia sáng quét ngang nút bấm */
         .btn-submit::after {
             content: "";
             position: absolute;
@@ -177,7 +254,7 @@
             background: linear-gradient(
                 to right,
                 rgba(255, 255, 255, 0) 0%,
-                rgba(255, 255, 255, 0.35) 50%,
+                rgba(255, 255, 255, 0.4) 50%,
                 rgba(255, 255, 255, 0) 100%
             );
             transform: rotate(25deg);
@@ -186,29 +263,29 @@
 
         .btn-submit:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px var(--primary-glow);
+            box-shadow: 0 8px 24px var(--primary-glow);
         }
 
-        /* Thẻ mục tiêu với Animation */
+        /* Thẻ mục tiêu kính mờ */
         .goal-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 16px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
             padding: 20px;
             margin-bottom: 20px;
-            box-shadow: var(--shadow);
-            position: relative;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: var(--glass-shadow);
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
             animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         .goal-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-hover);
-            border-color: #cbd5e1;
+            transform: translateY(-5px);
+            box-shadow: 0 24px 40px -12px rgba(2, 132, 199, 0.16);
+            border-color: rgba(255, 255, 255, 0.95);
         }
 
-        /* Rung rinh nhẹ khi nạp tiền thành công */
         .goal-card.deposit-punch {
             animation: cardPunch 0.4s ease;
         }
@@ -220,18 +297,18 @@
         }
 
         .goal-thumb {
-            width: 84px;
-            height: 84px;
-            border-radius: 12px;
+            width: 86px;
+            height: 86px;
+            border-radius: 14px;
             object-fit: cover;
-            background: #f1f5f9;
-            border: 1px solid var(--border);
+            background: rgba(241, 245, 249, 0.7);
+            border: 1px solid var(--glass-border);
             flex-shrink: 0;
             transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .goal-card:hover .goal-thumb {
-            transform: scale(1.06) rotate(-1.5deg);
+            transform: scale(1.06) rotate(-2deg);
         }
 
         .goal-info {
@@ -259,7 +336,7 @@
             font-size: 1.2rem;
             padding: 2px 6px;
             line-height: 1;
-            border-radius: 6px;
+            border-radius: 8px;
         }
 
         .btn-delete:hover {
@@ -285,17 +362,16 @@
             text-decoration: underline;
         }
 
-        /* Biểu đồ tròn động SVG & Số tiền */
+        /* Biểu đồ tròn và số tiền */
         .chart-and-stats {
             display: flex;
             align-items: center;
             gap: 16px;
             margin: 16px 0 12px;
             padding: 14px;
-            background: var(--surface-sub);
-            border-radius: 12px;
-            position: relative;
-            overflow: hidden;
+            background: var(--glass-sub);
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
         }
 
         .pie-chart {
@@ -318,7 +394,7 @@
         }
 
         .circle-bg {
-            stroke: #e2e8f0;
+            stroke: rgba(226, 232, 240, 0.8);
         }
 
         .circle-progress {
@@ -341,12 +417,9 @@
         }
 
         .stats-money {
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             font-weight: 700;
             color: var(--text-main);
-            display: flex;
-            align-items: baseline;
-            gap: 4px;
         }
 
         .stats-sub {
@@ -355,11 +428,11 @@
             margin-top: 2px;
         }
 
-        /* Hộp dự đoán tiến độ */
+        /* Dự đoán tiến độ */
         .forecast-box {
-            background: #eff6ff;
+            background: rgba(239, 246, 255, 0.8);
             border: 1px solid #bfdbfe;
-            border-radius: 10px;
+            border-radius: 12px;
             padding: 10px 14px;
             margin-bottom: 14px;
             font-size: 0.85rem;
@@ -367,11 +440,10 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            transition: all 0.3s ease;
         }
 
         .forecast-box.completed {
-            background: #dcfce7;
+            background: rgba(220, 252, 231, 0.85);
             border-color: #86efac;
             color: #15803d;
             animation: pulseGlow 2s infinite;
@@ -384,14 +456,14 @@
 
         .deposit-row input {
             flex: 1;
-            padding: 8px 12px;
+            padding: 9px 14px;
         }
 
         .btn-add {
             background: var(--success);
             color: white;
-            padding: 8px 18px;
-            box-shadow: 0 4px 10px var(--success-glow);
+            padding: 9px 18px;
+            box-shadow: 0 4px 12px var(--success-glow);
         }
 
         .btn-add:hover {
@@ -399,7 +471,7 @@
             transform: translateY(-1px);
         }
 
-        /* Các Keyframes Animation */
+        /* Keyframes */
         @keyframes float {
             0%, 100% { transform: translateY(0px) rotate(0deg); }
             50% { transform: translateY(-5px) rotate(5deg); }
@@ -411,33 +483,41 @@
         }
 
         @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-14px); }
+            from { opacity: 0; transform: translateY(-16px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes scaleIn {
-            from { opacity: 0; transform: scale(0.97); }
+            from { opacity: 0; transform: scale(0.96); }
             to { opacity: 1; transform: scale(1); }
         }
 
         @keyframes slideUpFade {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(24px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes cardPunch {
             0% { transform: scale(1); }
-            40% { transform: scale(1.02); }
+            40% { transform: scale(1.025); }
             100% { transform: scale(1); }
         }
 
         @keyframes pulseGlow {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.2); }
-            50% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+            0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.25); }
+            50% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
         }
     </style>
 </head>
 <body>
+
+<!-- Nền phát sáng Glow Orbs chuyển động -->
+<div class="glow-orb orb-1"></div>
+<div class="glow-orb orb-2"></div>
+<div class="glow-orb orb-3"></div>
+
+<!-- Nền Canvas hạt bụi sao bay -->
+<canvas id="particleCanvas"></canvas>
 
 <div class="container">
     <div class="header">
@@ -490,24 +570,79 @@
 </div>
 
 <script>
+    /* --- BỘ KHỞI TẠO NỀN CANVAS HẠT BỤI SAO BAY --- */
+    const canvas = document.getElementById('particleCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+        constructor() {
+            this.reset();
+            this.y = Math.random() * canvas.height;
+        }
+        reset() {
+            this.x = Math.random() * canvas.width;
+            this.y = canvas.height + Math.random() * 20;
+            this.size = Math.random() * 2.8 + 1.2;
+            this.speedY = Math.random() * 0.7 + 0.3;
+            this.speedX = (Math.random() - 0.5) * 0.4;
+            this.alpha = Math.random() * 0.5 + 0.25;
+            this.color = Math.random() > 0.5 ? '2, 132, 199' : '16, 185, 129';
+        }
+        update() {
+            this.y -= this.speedY;
+            this.x += this.speedX;
+            if (this.y < -10 || this.x < -10 || this.x > canvas.width + 10) {
+                this.reset();
+            }
+        }
+        draw() {
+            ctx.fillStyle = `rgba(${this.color}, ${this.alpha})`;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    // Tạo 40 hạt sao
+    for (let i = 0; i < 40; i++) {
+        particles.push(new Particle());
+    }
+
+    function animateParticles() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+            p.update();
+            p.draw();
+        });
+        requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
+    /* --- LOGIC QUẢN LÝ MỤC TIÊU --- */
     const DEFAULT_IMG = "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=150&auto=format&fit=crop&q=60";
-    let goals = JSON.parse(localStorage.getItem('my_animated_goals')) || [];
+    let goals = JSON.parse(localStorage.getItem('my_orb_goals')) || [];
 
     function save() {
-        localStorage.setItem('my_animated_goals', JSON.stringify(goals));
+        localStorage.setItem('my_orb_goals', JSON.stringify(goals));
     }
 
     function formatVND(val) {
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
     }
 
-    // Hiệu ứng số chạy mượt mà (Count-Up Animation)
     function animateCountUp(element, start, end, duration = 600) {
         const startTime = performance.now();
         function update(currentTime) {
             const elapsed = currentTime - startTime;
             const progress = Math.min(elapsed / duration, 1);
-            // Hàm gia tốc easeOutQuad
             const easeOut = 1 - (1 - progress) * (1 - progress);
             const currentVal = Math.floor(start + (end - start) * easeOut);
             element.textContent = formatVND(currentVal);
@@ -521,7 +656,6 @@
         requestAnimationFrame(update);
     }
 
-    // Tính toán số tiền mỗi ngày cần tiết kiệm
     function calculateDailySavings(target, current, deadlineStr) {
         if (current >= target) return { status: 'done', text: '🎉 Chúc mừng! Bạn đã đủ tiền để chốt đơn rồi!' };
         if (!deadlineStr) return { status: 'normal', text: '💡 Thêm ngày dự kiến mua để hệ thống tính số tiền mỗi ngày.' };
@@ -553,9 +687,9 @@
 
         if (goals.length === 0) {
             container.innerHTML = `
-                <div style="text-align: center; padding: 40px; color: var(--text-muted); background: white; border-radius: 16px; border: 1px dashed var(--border);">
-                    <p style="font-size: 1.1rem;">Chưa có mục tiêu nào được tạo.</p>
-                    <p style="font-size: 0.85rem; margin-top: 6px;">Hãy thêm chiếc màn hình hoặc món đồ bạn muốn ở phía trên!</p>
+                <div style="text-align: center; padding: 40px; color: var(--text-muted); background: var(--glass-bg); backdrop-filter: blur(16px); border-radius: 20px; border: 1px dashed rgba(203, 213, 225, 0.8);">
+                    <p style="font-size: 1.1rem; font-weight: 600;">Chưa có mục tiêu nào được tạo.</p>
+                    <p style="font-size: 0.85rem; margin-top: 6px;">Hãy đặt mục tiêu chiếc màn hình bạn thích ở bảng phía trên!</p>
                 </div>
             `;
             return;
@@ -612,13 +746,11 @@
             `;
             container.appendChild(card);
 
-            // Kích hoạt animation chạy vòng tròn sau khi thẻ gắn vào DOM
             setTimeout(() => {
                 const circle = card.querySelector('.circle-progress');
                 if (circle) circle.style.strokeDashoffset = strokeDashoffset;
-            }, 50);
+            }, 60);
 
-            // Chạy hiệu ứng đếm số nếu là thẻ vừa được nạp tiền
             if (animateIdx === idx) {
                 const moneyEl = card.querySelector(`#money-${idx}`);
                 animateCountUp(moneyEl, prevAmount, goal.current);
@@ -643,7 +775,6 @@
         save();
         renderGoals();
 
-        // Xóa trắng form
         document.getElementById('name').value = '';
         document.getElementById('target').value = '';
         document.getElementById('current').value = '0';
@@ -661,7 +792,6 @@
         const prevCurrent = goals[idx].current;
         goals[idx].current = Math.max(0, goals[idx].current + amount);
 
-        // Bắn pháo hoa nếu vừa cán mốc 100%
         if (goals[idx].current >= goals[idx].target && prevCurrent < goals[idx].target) {
             triggerVictoryConfetti();
         }
@@ -670,7 +800,6 @@
         renderGoals(idx, prevCurrent);
     }
 
-    // Hiệu ứng pháo hoa hai bên màn hình
     function triggerVictoryConfetti() {
         if (typeof confetti !== 'function') return;
         const count = 200;
