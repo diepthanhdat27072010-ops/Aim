@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mục Tiêu Mua Sắm</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f8fafc;
+            --text-sub: #94a3b8;
+            --accent: #38bdf8;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --border: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            padding: 30px 16px;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 620px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.7rem;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        label {
+            font-size: 0.85rem;
+            color: var(--text-sub);
+        }
+
+        input {
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 12px;
+            color: var(--text);
+            outline: none;
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--accent);
+        }
+
+        .row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .row .form-group {
+            flex: 1;
+        }
+
+        button {
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .btn-submit {
+            background: var(--accent);
+            color: #0f172a;
+            width: 100%;
+            margin-top: 6px;
+        }
+
+        .btn-add {
+            background: var(--success);
+            color: white;
+            white-space: nowrap;
+        }
+
+        .btn-delete {
+            background: transparent;
+            color: var(--danger);
+            font-size: 0.85rem;
+            padding: 4px;
+        }
+
+        .btn-link {
+            display: inline-block;
+            text-decoration: none;
+            background: #334155;
+            color: var(--text);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            margin-top: 6px;
+            width: fit-content;
+        }
+
+        .btn-link:hover {
+            background: var(--accent);
+            color: #0f172a;
+        }
+
+        .goal-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .goal-top {
+            display: flex;
+            gap: 14px;
+            margin-bottom: 12px;
+        }
+
+        .goal-thumb {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: #0f172a;
+            border: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .goal-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .goal-title {
+            font-weight: 600;
+            font-size: 1.05rem;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 10px;
+            background: #0f172a;
+            border-radius: 999px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0284c7, #22c55e);
+            border-radius: 999px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .goal-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            margin-bottom: 12px;
+        }
+
+        .deposit-control {
+            display: flex;
+            gap: 8px;
+        }
+
+        .deposit-control input {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🎯 Mục Tiêu Mua Sắm</h1>
+
+    <!-- Khung nhập mục tiêu mới -->
+    <div class="card">
+        <h2 style="font-size: 1.1rem; margin-bottom: 12px;">Thêm mục tiêu mới</h2>
+        
+        <div class="form-group">
+            <label>Tên món đồ / Thiết bị *</label>
+            <input type="text" id="name" placeholder="Ví dụ: Màn hình 27 inch 144Hz">
+        </div>
+
+        <div class="row">
+            <div class="form-group">
+                <label>Giá tiền cần (VNĐ) *</label>
+                <input type="number" id="target" placeholder="Ví dụ: 4500000">
+            </div>
+            <div class="form-group">
+                <label>Đã có sẵn (VNĐ)</label>
+                <input type="number" id="current" value="0">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Link mua hàng (Shopee, CellphoneS, Tiki...)</label>
+            <input type="url" id="link" placeholder="https://...">
+        </div>
+
+        <div class="form-group">
+            <label>Link ảnh sản phẩm (Chuột phải vào ảnh chọn 'Sao chép địa chỉ hình ảnh')</label>
+            <input type="url" id="image" placeholder="https://...">
+        </div>
+
+        <button class="btn-submit" onclick="createGoal()">+ Lưu Mục Tiêu</button>
+    </div>
+
+    <!-- Danh sách mục tiêu đã lưu -->
+    <div id="goals-list"></div>
+</div>
+
+<script>
+    const DEFAULT_IMG = "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=150&auto=format&fit=crop&q=60";
+    
+    // Đọc dữ liệu từ bộ nhớ trình duyệt
+    let goals = JSON.parse(localStorage.getItem('my_web_goals')) || [];
+
+    function save() {
+        localStorage.setItem('my_web_goals', JSON.stringify(goals));
+    }
+
+    function formatVND(amount) {
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+    }
+
+    function renderGoals() {
+        const container = document.getElementById('goals-list');
+        container.innerHTML = '';
+
+        if (goals.length === 0) {
+            container.innerHTML = '<p style="text-align: center; color: var(--text-sub); margin-top: 10px;">Chưa có mục tiêu nào. Hãy thêm ở bảng trên!</p>';
+            return;
+        }
+
+        goals.forEach((goal, idx) => {
+            const percent = Math.min(100, Math.round((goal.current / goal.target) * 100));
+            const isCompleted = goal.current >= goal.target;
+            const imgSrc = goal.image ? goal.image : DEFAULT_IMG;
+
+            const div = document.createElement('div');
+            div.className = 'goal-item';
+            div.innerHTML = `
+                <div class="goal-top">
+                    <img src="${imgSrc}" class="goal-thumb" onerror="this.src='${DEFAULT_IMG}'">
+                    <div class="goal-info">
+                        <div class="goal-header">
+                            <span class="goal-title">${goal.name} ${isCompleted ? '🎉 (Đủ tiền)' : ''}</span>
+                            <button class="btn-delete" onclick="deleteGoal(${idx})">Xóa</button>
+                        </div>
+                        ${goal.link ? `<a href="${goal.link}" target="_blank" class="btn-link">🔗 Xem nơi bán</a>` : ''}
+                    </div>
+                </div>
+
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" style="width: ${percent}%;"></div>
+                </div>
+
+                <div class="goal-stats">
+                    <span>${formatVND(goal.current)} / ${formatVND(goal.target)}</span>
+                    <span style="font-weight: 600; color: ${isCompleted ? 'var(--success)' : 'var(--accent)'}">${percent}%</span>
+                </div>
+
+                <div class="deposit-control">
+                    <input type="number" id="deposit-${idx}" placeholder="Nhập số tiền nạp thêm...">
+                    <button class="btn-add" onclick="depositMoney(${idx})">Nạp tiền</button>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function createGoal() {
+        const name = document.getElementById('name').value.trim();
+        const target = parseFloat(document.getElementById('target').value);
+        const current = parseFloat(document.getElementById('current').value) || 0;
+        const link = document.getElementById('link').value.trim();
+        const image = document.getElementById('image').value.trim();
+
+        if (!name || isNaN(target) || target <= 0) {
+            alert('Vui lòng điền tên món đồ và số tiền cần đạt!');
+            return;
+        }
+
+        goals.push({ name, target, current, link, image });
+        save();
+        renderGoals();
+
+        // Xóa trắng form
+        document.getElementById('name').value = '';
+        document.getElementById('target').value = '';
+        document.getElementById('current').value = '0';
+        document.getElementById('link').value = '';
+        document.getElementById('image').value = '';
+    }
+
+    function depositMoney(idx) {
+        const input = document.getElementById(`deposit-${idx}`);
+        const amount = parseFloat(input.value);
+
+        if (isNaN(amount) || amount === 0) {
+            alert('Vui lòng nhập số tiền hợp lệ!');
+            return;
+        }
+
+        goals[idx].current += amount;
+        if (goals[idx].current < 0) goals[idx].current = 0;
+
+        save();
+        renderGoals();
+    }
+
+    function deleteGoal(idx) {
+        if (confirm(`Bạn muốn xóa mục tiêu "${goals[idx].name}"?`)) {
+            goals.splice(idx, 1);
+            save();
+            renderGoals();
+        }
+    }
+
+    renderGoals();
+</script>
+
+</body>
+</html>
